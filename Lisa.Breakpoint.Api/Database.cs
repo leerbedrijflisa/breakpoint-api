@@ -1,5 +1,6 @@
 ﻿using Lisa.Common.TableStorage;
 using Lisa.Common.WebApi;
+using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Collections.Generic;
@@ -10,6 +11,11 @@ namespace Lisa.Breakpoint.Api
 {
     public class Database
     {
+        public Database(IOptions<TableStorageSettings> settings)
+        {
+            _settings = settings.Value;
+        }
+
         public async Task<IEnumerable<DynamicModel>> FetchReports()
         {
             CloudTable table = await Connect();
@@ -21,9 +27,9 @@ namespace Lisa.Breakpoint.Api
             return results;
         }
 
-        private static async Task<CloudTable> Connect()
+        private async Task<CloudTable> Connect()
         {
-            var account = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+            var account = CloudStorageAccount.Parse(_settings.ConnectionString);
             var client = account.CreateCloudTableClient();
             var table = client.GetTableReference("Reports");
             await table.CreateIfNotExistsAsync();
@@ -31,6 +37,7 @@ namespace Lisa.Breakpoint.Api
             return table;
         }
 
+        private TableStorageSettings _settings;
         private List<DynamicModel> _reports = new List<DynamicModel>();
     }
 }
