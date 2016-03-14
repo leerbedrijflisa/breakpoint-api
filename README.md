@@ -15,5 +15,5 @@ Lisa.Breakpoint.Api is licensed under the terms of the [Open Software License 3.
 * You can use the Lisa.Breakpoint.Api source code as is for pretty much any purpose you want.
 * You can create an application that uses Lisa.Breakpoint.Api and release your application under whatever terms you like.
 * If you modify Lisa.Breakpoint.Api in any way, you must release the source code of your modifications under the Open Software License 3.0.
-* Don't pretend you wrote Lisa.Common.
+* Don't pretend you wrote Lisa.Breakpoint.Api.
 * Don't blame us when something goes wrong.
