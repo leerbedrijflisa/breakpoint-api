@@ -23,25 +23,19 @@ namespace Lisa.Breakpoint.Api
 
             var query = new TableQuery<DynamicEntity>();
             var reports = await table.ExecuteQuerySegmentedAsync(query, null);
-
             var results = reports.Select(r => ReportMapper.ToModel(r));
+
             return results;
         }
 
-        public async Task<IEnumerable<DynamicModel>> FetchSingleReport(Guid id)
+        public async Task<DynamicModel> FetchReport(Guid id)
         {
             CloudTable table = await Connect();
 
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal, id));
             var report = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = report.Select(r => ReportMapper.ToModel(r)).SingleOrDefault();
 
-            if (report.Count() == 0)
-            {
-                return null;
-            }
-
-            var result = report.Select(r => ReportMapper.ToModel(r));
-            var result2 = result.FirstOrDefault();
             return result;
         }
 
@@ -52,12 +46,10 @@ namespace Lisa.Breakpoint.Api
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
             reportEntity.PartitionKey = reportEntity.Project;
-            reportEntity.RowKey = reportEntity.id;
+            reportEntity.RowKey = reportEntity.Id.ToString();
 
             var action = TableOperation.Insert(reportEntity);
-
             await table.ExecuteAsync(action);
-
             var result = ReportMapper.ToModel(reportEntity);
 
             return result;
@@ -74,6 +66,5 @@ namespace Lisa.Breakpoint.Api
         }
 
         private TableStorageSettings _settings;
-        private List<DynamicModel> _reports = new List<DynamicModel>();
     }
 }
