@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Lisa.Common.WebApi;
+using Microsoft.AspNet.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace Lisa.Breakpoint.Api
             }
 
             var result = ReportSorter.Sort(reports, sort, order);
+
+            if (result == null)
+            {
+                return new UnprocessableEntityObjectResult("{\n'errorCode': 50134,\n'errorMessage': 'Sort is not valid'\n}");
+            }
             return new HttpOkObjectResult(result);
         }
 
