@@ -27,7 +27,6 @@ namespace Lisa.Breakpoint.Api
                 }
             }
             return null;
-
         }
 
         public static string[] sortableFields = new string[4] {

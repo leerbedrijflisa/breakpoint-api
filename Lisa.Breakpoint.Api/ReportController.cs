@@ -31,14 +31,6 @@ namespace Lisa.Breakpoint.Api
             }
             return new HttpOkObjectResult(result);
         }
-
-        //[HttpGet]
-        //public async Task<ActionResult> Get([FromQuery]string sort, [FromQuery]string order)
-        //{
-        //    var reports = await _db.FetchReports();
-        //    return new HttpOkObjectResult(sort);
-        //}
-
         private Database _db;
     }
 }
