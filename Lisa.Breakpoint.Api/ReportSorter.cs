@@ -1,4 +1,5 @@
 ﻿using Lisa.Common.WebApi;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,15 +9,17 @@ namespace Lisa.Breakpoint.Api
     {
         public static List<DynamicModel> Sort(IEnumerable<DynamicModel> reports, string sort, string order)
         {
+            string[] splittedSort = sort.Split(',');
+            string[] splittedOrder = order.Split(',');
             foreach (string sortableField in sortableFields)
             {
-                if (sort == sortableField)
+                if (splittedSort[0] == sortableField)
                 {
-                    if (order.ToLower() == "asc")
+                    if (splittedOrder[0].ToLower() == "asc")
                     {
                         return reports.AsQueryable().OrderBy(r => r[sort]).ToList();
                     }
-                    else if (order.ToLower() == "desc")
+                    else if (splittedOrder[0].ToLower() == "desc")
                     {
                         return reports.AsQueryable().OrderByDescending(r => r[sort]).ToList();
                     }
