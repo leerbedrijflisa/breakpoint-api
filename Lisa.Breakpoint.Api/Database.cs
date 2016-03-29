@@ -48,11 +48,22 @@ namespace Lisa.Breakpoint.Api
             reportEntity.PartitionKey = reportEntity.Project;
             reportEntity.RowKey = reportEntity.Id.ToString();
 
-            var action = TableOperation.Insert(reportEntity);
-            await table.ExecuteAsync(action);
+            var InsertOperation = TableOperation.Insert(reportEntity);
+            await table.ExecuteAsync(InsertOperation);
             var result = ReportMapper.ToModel(reportEntity);
 
             return result;
+        }
+
+        public async Task UpdateReport(DynamicModel report)
+        {
+            CloudTable table = await Connect();
+
+            dynamic reportEntity = ReportMapper.ToEntity(report);
+
+            var updateOperation = TableOperation.InsertOrReplace(reportEntity);
+
+            await table.ExecuteAsync(updateOperation);
         }
 
         private async Task<CloudTable> Connect()

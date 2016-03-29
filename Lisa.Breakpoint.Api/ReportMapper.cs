@@ -17,12 +17,14 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.Title = model.Title;
             entity.Project = model.Project;
+            entity.Status = model.Status;
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
             {
                 entity.Id = Guid.NewGuid();
                 entity.Reported = DateTime.UtcNow;
+                entity.Status = "open";
             }
             else
             {
@@ -46,6 +48,7 @@ namespace Lisa.Breakpoint.Api
             model.Id = entity.Id;
             model.Title = entity.Title;
             model.Project = entity.Project;
+            model.Status = entity.Status;
             model.Reported = entity.Reported;
 
             var metadata = new
