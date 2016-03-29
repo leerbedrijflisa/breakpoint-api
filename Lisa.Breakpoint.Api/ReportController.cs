@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNet.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -12,9 +14,21 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> GetReports([FromQuery] string project, [FromQuery] string status)
         {
-            var reports = await _db.FetchReports();
+            List<Tuple<string, string>> filter = new List<Tuple<string, string>>();
+
+            if (project != null)
+            {
+                filter.Add(Tuple.Create("Project", project));
+            }
+            if (status != null)
+            {
+                filter.Add(Tuple.Create("Status", status));
+            }
+
+            var reports = await _db.FetchReports(filter);
+
             return new HttpOkObjectResult(reports);
         }
 

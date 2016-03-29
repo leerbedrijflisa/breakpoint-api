@@ -3,6 +3,7 @@ using Lisa.Common.WebApi;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,15 +16,44 @@ namespace Lisa.Breakpoint.Api
         {
             _settings = settings.Value;
         }
-
-        public async Task<IEnumerable<DynamicModel>> FetchReports()
+        
+        public async Task<IEnumerable<DynamicModel>> FetchReports(List<Tuple<string, string>> filter)
         {
             CloudTable table = await Connect();
+            TableQuery<DynamicEntity> query = new TableQuery<DynamicEntity>();
 
-            var query = new TableQuery<DynamicEntity>();
+            if (filter.Count == 1)
+            {
+                var filterCondition = TableQuery.GenerateFilterCondition(filter[0].Item1, QueryComparisons.Equal, filter[0].Item2);
+
+                query = query.Where(filterCondition);
+            }
+            else if (filter.Count > 1)
+            {
+                List<string> filterConditions = new List<string>();
+
+                for (int i = 0; i < filter.Count; i++)
+                {
+                    if(i == 0)
+                    {
+                        filterConditions.Add(TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2));
+                    }
+                    else
+                    {
+                        filterConditions.Add(TableOperators.And);
+                        filterConditions.Add(TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2));
+                    }
+                }
+
+                string numbers = "({0}) {1} ({2})";
+                var allFilterConditions = string.Format(numbers, filterConditions.ToArray());
+
+                query = query.Where(allFilterConditions);
+            }
+
             var reports = await table.ExecuteQuerySegmentedAsync(query, null);
-
             var results = reports.Select(r => ReportMapper.ToModel(r));
+
             return results;
         }
 
