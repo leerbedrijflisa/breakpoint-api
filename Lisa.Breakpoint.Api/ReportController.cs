@@ -15,17 +15,13 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get([FromQuery] string sort, [FromQuery] string order, [FromQuery] string project, [FromQuery] string status)
+        public async Task<ActionResult> Get([FromQuery] string sort, [FromQuery] string order, [FromQuery] string project)
         {
             List<Tuple<string, string>> filter = new List<Tuple<string, string>>();
 
             if (project != null)
             {
                 filter.Add(Tuple.Create("Project", project));
-            }
-            if (status != null)
-            {
-                filter.Add(Tuple.Create("Status", status));
             }
 
             var reports = await _db.FetchReports(filter);

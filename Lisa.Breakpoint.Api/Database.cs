@@ -22,33 +22,11 @@ namespace Lisa.Breakpoint.Api
             CloudTable table = await Connect();
             var query = new TableQuery<DynamicEntity>();
 
-            if (filter.Count == 1)
+            if (filter.Count > 0)
             {
                 var filterCondition = TableQuery.GenerateFilterCondition(filter[0].Item1, QueryComparisons.Equal, filter[0].Item2);
 
                 query = query.Where(filterCondition);
-            }
-            else if (filter.Count > 1)
-            {
-                List<string> filterConditions = new List<string>();
-
-                for (int i = 0; i < filter.Count; i++)
-                {
-                    if(i == 0)
-                    {
-                        filterConditions.Add(TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2));
-                    }
-                    else
-                    {
-                        filterConditions.Add(TableOperators.And);
-                        filterConditions.Add(TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2));
-                    }
-                }
-
-                string numbers = "({0}) {1} ({2})";
-                var allFilterConditions = string.Format(numbers, filterConditions.ToArray());
-
-                query = query.Where(allFilterConditions);
             }
             
             var reports = await table.ExecuteQuerySegmentedAsync(query, null);
