@@ -19,7 +19,8 @@ namespace Lisa.Breakpoint.Api
                         Message = $"Only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
                         Values = new
                         {
-                            Field = fieldName
+                            Field = fieldName,
+                            ExpectedValues = status
                         }
                     };
                     Result.Errors.Add(error);
