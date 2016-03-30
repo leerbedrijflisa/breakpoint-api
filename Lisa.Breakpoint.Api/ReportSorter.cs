@@ -8,6 +8,7 @@ namespace Lisa.Breakpoint.Api
     {
         public static List<DynamicModel> Sort(IEnumerable<DynamicModel> reports, string sort, string order)
         {
+            List<DynamicModel> errors = new List<DynamicModel>();
             foreach (string sortableField in sortableFields)
             {
                 if (sort == sortableField)
@@ -22,11 +23,13 @@ namespace Lisa.Breakpoint.Api
                     }
                     else
                     {
-                        return null;
+                        errors.Add(new DynamicModel { error = "order" });
+                        return error;
                     }
                 }
             }
-            return null;
+            error.Add("sort");
+            return error;
         }
 
         public static string[] sortableFields = new string[4] {
