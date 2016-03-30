@@ -22,11 +22,11 @@ namespace Lisa.Breakpoint.Api
                     }
                     else
                     {
-                        return null;
+                        return reports.ToList();
                     }
                 }
             }
-            return null;
+            return reports.ToList();
         }
 
         public static string[] sortableFields = new string[4] {
