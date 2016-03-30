@@ -33,26 +33,10 @@ namespace Lisa.Breakpoint.Api
 
             var result = ReportSorter.Sort(reports, sort, order);
 
-            if (result[0] == "order")
+            if (result == null)
             {
-                return new UnprocessableEntityObjectResult(new Error()
-                {
-                    Code = 51154,
-                    Message = "The order field was not valid, values most be either 'asc' or 'desc'.",
-                    Values = new { Field = "order" }
-                });
+                return new UnprocessableEntityObjectResult("{\n'errorCode': 50134,\n'errorMessage': 'Sort is not valid'\n}");
             }
-
-            if (result[0] == "sort")
-            {
-                return new UnprocessableEntityObjectResult(new Error()
-                {
-                    Code = 51155,
-                    Message = "The sort field was not valid. Valid values listed below",
-                    Values = new { Field = "sort", Values = ReportSorter.sortableFields}
-                })
-            }
-
             return new HttpOkObjectResult(result);
         }
 
