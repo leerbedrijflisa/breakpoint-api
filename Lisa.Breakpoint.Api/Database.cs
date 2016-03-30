@@ -26,9 +26,20 @@ namespace Lisa.Breakpoint.Api
             {
                 var filterCondition = TableQuery.GenerateFilterCondition(filter[0].Item1, QueryComparisons.Equal, filter[0].Item2);
 
+                if (filter.Count > 1)
+                {
+                    for (int i = 1; i < filter.Count; i++)
+                    {
+
+                        filterCondition = TableQuery.CombineFilters(
+                                          TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2),
+                                          TableOperators.And,
+                                          filterCondition);
+                    }
+                }
                 query = query.Where(filterCondition);
             }
-            
+
             var reports = await table.ExecuteQuerySegmentedAsync(query, null);
             var results = reports.Select(r => ReportMapper.ToModel(r));
 
