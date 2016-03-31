@@ -33,7 +33,7 @@ namespace Lisa.Breakpoint.Api
             Ignore("Id");
             Required("Title", NotEmpty);
             Required("Project", NotEmpty);
-            Required("Assignee", NotEmpty);
+            Optional("Assignee", NotEmpty);
             Optional("Status", ValidateArray, NotEmpty);
             Ignore("Reported");
         }
