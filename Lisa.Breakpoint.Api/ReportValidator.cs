@@ -33,6 +33,7 @@ namespace Lisa.Breakpoint.Api
             Ignore("Id");
             Required("Title", NotEmpty);
             Required("Project", NotEmpty);
+            Required("Assignee", NotEmpty);
             Optional("Status", ValidateArray, NotEmpty);
             Ignore("Reported");
         }
@@ -40,6 +41,7 @@ namespace Lisa.Breakpoint.Api
         protected override void ValidatePatch()
         {
             Allow("Status");
+            Allow("Assignee");
         }
     }
 }

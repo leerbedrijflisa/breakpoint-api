@@ -17,6 +17,7 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.Title = model.Title;
             entity.Project = model.Project;
+            entity.Assignee = model.Assignee;
             entity.Status = model.Status;
 
             dynamic metadata = model.GetMetadata();
@@ -48,6 +49,7 @@ namespace Lisa.Breakpoint.Api
             model.Id = entity.Id;
             model.Title = entity.Title;
             model.Project = entity.Project;
+            model.Assignee = entity.Assignee;
             model.Status = entity.Status;
             model.Reported = entity.Reported;
 
