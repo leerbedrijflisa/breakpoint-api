@@ -26,6 +26,7 @@ namespace Lisa.Breakpoint.Api
                     }
                 }
             }
+
             return reports.ToList();
         }
 

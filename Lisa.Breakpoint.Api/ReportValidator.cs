@@ -30,18 +30,18 @@ namespace Lisa.Breakpoint.Api
 
         protected override void ValidateModel()
         {
-            Ignore("Id");
-            Required("Title", NotEmpty);
-            Required("Project", NotEmpty);
-            Optional("Assignee", NotEmpty);
-            Optional("Status", ValidateArray, NotEmpty);
-            Ignore("Reported");
+            Ignore("id");
+            Required("title", NotEmpty);
+            Required("project", NotEmpty);
+            Optional("assignee", NotEmpty);
+            Optional("status", ValidateArray, NotEmpty);
+            Ignore("reported");
         }
 
         protected override void ValidatePatch()
         {
-            Allow("Status");
-            Allow("Assignee");
+            Allow("status");
+            Allow("assignee");
         }
     }
 }

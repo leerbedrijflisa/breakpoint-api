@@ -30,9 +30,12 @@ namespace Lisa.Breakpoint.Api
 
             foreach (dynamic report in reports)
             {
-                if (!users.Contains(report.Assignee))
+                if (report.Assignee != null)
                 {
-                    users.Add(report.Assignee);
+                    if (!users.Contains(report.Assignee))
+                    {
+                        users.Add(report.Assignee);
+                    }
                 }
             }
 
