@@ -1,7 +1,4 @@
-﻿using Lisa.Common.TableStorage;
-using Lisa.Common.WebApi;
-using Microsoft.AspNet.Mvc;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.AspNet.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -38,10 +35,14 @@ namespace Lisa.Breakpoint.Api
                     }
                 }
             }
+            if (users.Count == 0)
+            {
+                return new HttpNotFoundResult();
+            }
 
             return new HttpOkObjectResult(users);
         }
 
         private Database _db;
     }
-}   
+}
