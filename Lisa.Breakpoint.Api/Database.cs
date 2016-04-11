@@ -20,23 +20,12 @@ namespace Lisa.Breakpoint.Api
         public async Task<IEnumerable<DynamicModel>> FetchReports(List<Tuple<string, string>> filter)
         {
             CloudTable table = await Connect();
+
             var query = new TableQuery<DynamicEntity>();
 
             if (filter.Count > 0)
             {
-                var filterCondition = TableQuery.GenerateFilterCondition(filter[0].Item1, QueryComparisons.Equal, filter[0].Item2);
-
-                if (filter.Count > 1)
-                {
-                    for (int i = 1; i < filter.Count; i++)
-                    {
-
-                        filterCondition = TableQuery.CombineFilters(
-                                          TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2),
-                                          TableOperators.And,
-                                          filterCondition);
-                    }
-                }
+                var filterCondition = CreateFilter(filter);
                 query = query.Where(filterCondition);
             }
 
@@ -92,6 +81,25 @@ namespace Lisa.Breakpoint.Api
             await table.CreateIfNotExistsAsync();
 
             return table;
+        }
+
+        private string CreateFilter(List<Tuple<string, string>> filter)
+        {
+            var filterCondition = TableQuery.GenerateFilterCondition(filter[0].Item1, QueryComparisons.Equal, filter[0].Item2);
+
+            if (filter.Count > 1)
+            {
+                for (int i = 1; i < filter.Count; i++)
+                {
+
+                    filterCondition = TableQuery.CombineFilters(
+                                      TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2),
+                                      TableOperators.And,
+                                      filterCondition);
+                }
+            }
+
+            return filterCondition;
         }
 
         private TableStorageSettings _settings;
