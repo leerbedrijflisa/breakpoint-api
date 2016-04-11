@@ -20,6 +20,7 @@ namespace Lisa.Breakpoint.Api
                         Values = new
                         {
                             Field = fieldName,
+                            Value = value,
                             ExpectedValues = status
                         }
                     };
