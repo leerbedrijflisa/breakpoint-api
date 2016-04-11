@@ -106,8 +106,10 @@ namespace Lisa.Breakpoint.Api
 
             patcher.Apply(patches, report);
             await _db.UpdateReport(report);
+
             return new HttpOkObjectResult(report);
         }
+
         private Database _db;
         private Validator _validator = new ReportValidator();
     }
