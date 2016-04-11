@@ -29,12 +29,13 @@ namespace Lisa.Breakpoint.Api
             return reports.ToList();
         }
 
-        public static string[] sortableFields = new string[5] {
+        public static string[] sortableFields = new string[6] {
             "id",
             "title",
             "project",
             "status",
-            "reported"
+            "reported",
+            "assignee"
         };
     }
 }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Lisa.Common.TableStorage;
+using Lisa.Common.WebApi;
+using Microsoft.AspNet.Mvc;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,12 +17,18 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> Get([FromQuery] string project)
         {
             var filter = new List<Tuple<string, string>>();
-            var reports = await _db.FetchReports(filter);
             var users = new List<string>();
-            foreach(dynamic report in reports)
+            if (project != null)
+            {
+                filter.Add(Tuple.Create("Project", project));
+            }
+
+            var reports = await _db.FetchReports(filter);
+
+            foreach (dynamic report in reports)
             {
                 if (!users.Contains(report.Assignee))
                 {
