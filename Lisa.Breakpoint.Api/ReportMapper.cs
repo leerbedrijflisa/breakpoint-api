@@ -2,6 +2,7 @@
 using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -14,23 +15,25 @@ namespace Lisa.Breakpoint.Api
                 throw new ArgumentNullException("model");
             }
 
+            model.project = Regex.Replace(model.project.ToString(), @"[^\w\d]", "");
+
             dynamic entity = new DynamicEntity();
-            entity.Title = model.Title;
-            entity.Project = model.Project;
-            entity.Assignee = model.Assignee;
-            entity.Status = model.Status;
+            entity.title = model.title;
+            entity.project = model.project;
+            entity.assignee = model.assignee;
+            entity.status = model.status;
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
             {
-                entity.Id = Guid.NewGuid();
-                entity.Reported = DateTime.UtcNow;
-                entity.Status = "open";
+                entity.id = Guid.NewGuid();
+                entity.reported = DateTime.UtcNow;
+                entity.status = "open";
             }
             else
             {
-                entity.Id = model.Id;
-                entity.Reported = model.Reported;
+                entity.id = model.id;
+                entity.reported = model.reported;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
             }
@@ -46,15 +49,15 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic model = new DynamicModel();
-            model.Id = entity.Id;
-            model.Title = entity.Title;
-            model.Project = entity.Project;
-            if (entity.Assignee != null)
+            model.id = entity.id;
+            model.title = entity.title;
+            model.project = entity.project;
+            if (entity.assignee != null)
             {
-                model.Assignee = entity.Assignee;
+                model.assignee = entity.assignee;
             }
-            model.Status = entity.Status;
-            model.Reported = entity.Reported;
+            model.status = entity.status;
+            model.reported = entity.reported;
 
             var metadata = new
             {

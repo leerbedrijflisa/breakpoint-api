@@ -39,7 +39,7 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect();
 
-            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("Id", QueryComparisons.Equal, id));
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
             var report = await table.ExecuteQuerySegmentedAsync(query, null);
             var result = report.Select(r => ReportMapper.ToModel(r)).SingleOrDefault();
 
@@ -52,8 +52,8 @@ namespace Lisa.Breakpoint.Api
 
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
-            reportEntity.PartitionKey = reportEntity.Project;
-            reportEntity.RowKey = reportEntity.Id.ToString();
+            reportEntity.PartitionKey = reportEntity.project;
+            reportEntity.RowKey = reportEntity.id.ToString();
 
             var InsertOperation = TableOperation.Insert(reportEntity);
             await table.ExecuteAsync(InsertOperation);
