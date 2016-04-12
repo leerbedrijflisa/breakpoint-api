@@ -35,11 +35,6 @@ namespace Lisa.Breakpoint.Api
                     }
                 }
             }
-            if (users.Count == 0)
-            {
-                return new HttpNotFoundResult();
-            }
-
             return new HttpOkObjectResult(users);
         }
 
