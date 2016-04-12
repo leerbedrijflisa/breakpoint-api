@@ -20,7 +20,7 @@ namespace Lisa.Breakpoint.Api
             var users = new List<string>();
             if (project != null)
             {
-                filter.Add(Tuple.Create("Project", project));
+                filter.Add(Tuple.Create("project", project));
             }
 
             var reports = await _db.FetchReports(filter);
