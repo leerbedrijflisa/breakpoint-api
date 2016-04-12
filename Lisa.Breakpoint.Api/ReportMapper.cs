@@ -2,7 +2,6 @@
 using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
-using System.Text.RegularExpressions;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -14,8 +13,6 @@ namespace Lisa.Breakpoint.Api
             {
                 throw new ArgumentNullException("model");
             }
-
-            model.project = Regex.Replace(model.project.ToString(), @"[^\w\d]", "");
 
             dynamic entity = new DynamicEntity();
             entity.title = model.title;
