@@ -21,15 +21,15 @@ namespace Lisa.Breakpoint.Api
 
             if (project != null)
             {
-                filter.Add(Tuple.Create("Project", project));
+                filter.Add(Tuple.Create("project", project));
             }
             if (status != null)
             {
-                filter.Add(Tuple.Create("Status", status));
+                filter.Add(Tuple.Create("status", status));
             }
             if (assignee != null)
             {
-                filter.Add(Tuple.Create("Assignee", assignee));
+                filter.Add(Tuple.Create("assignee", assignee));
             }
 
             var reports = await _db.FetchReports(filter);
