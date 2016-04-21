@@ -22,17 +22,27 @@ namespace Lisa.Breakpoint.Api
             entity.assignee = model.assignee;
             entity.status = model.status;
 
-            if (model.comment.GetType().Name == "String")
+            if (model.comment != null)
             {
                 var commentList = new List<string>();
-                commentList.Add(model.comment);
+                if (model.comment.GetType().Name == "String")
+                {
+                    commentList.Add(model.comment);
 
-                entity.comment = JsonConvert.SerializeObject(commentList);
+                    entity.comment = JsonConvert.SerializeObject(commentList);
+                }
+                else
+                {
+                    entity.comment = JsonConvert.SerializeObject(model.comment);
+                }
             }
             else
             {
-                entity.comment = JsonConvert.SerializeObject(model.comment);
+                var commentList = new List<string>();
+                model.comment = JsonConvert.SerializeObject(commentList);
+                entity.comment = model.comment;
             }
+           
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)

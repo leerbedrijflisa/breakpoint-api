@@ -79,7 +79,7 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
         
-        public async Task UpdateCommentInReport(DynamicModel comment, DynamicModel report)
+        public async Task SaveCommentInReport(DynamicModel comment, DynamicModel report)
         {
             CloudTable table = await Connect("Reports");
 
