@@ -35,9 +35,9 @@ namespace Lisa.Breakpoint.Api
             Ignore("id");
             Required("title", NotEmpty, TypeOf(DataTypes.String));
             Required("project", NotEmpty, TypeOf(DataTypes.String));
-            Optional("assignee", NotEmpty, TypeOf(DataTypes.String));
+            Optional("assignee", TypeOf(DataTypes.String));
             Optional("status", NotEmpty, ValidateArray);
-            Optional("comment", NotEmpty, TypeOf(DataTypes.String));
+            Optional("comment", NotEmpty, TypeOf(DataTypes.Array));
             Ignore("reported");
         }
 
