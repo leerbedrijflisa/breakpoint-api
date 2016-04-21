@@ -49,14 +49,16 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.title = entity.title;
             model.project = entity.project;
+
             if (entity.assignee != null)
             {
                 model.assignee = entity.assignee;
             }
             else
             {
-                model.assignee = "no one";
+                model.assignee = "";
             }
+
             model.status = entity.status;
             model.reported = entity.reported;
 
