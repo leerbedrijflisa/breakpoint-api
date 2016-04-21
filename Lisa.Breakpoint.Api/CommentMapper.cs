@@ -3,11 +3,10 @@ using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
 namespace Lisa.Breakpoint.Api
 {
-    public class ReportMapper
+    public class CommentMapper
     {
         public static ITableEntity ToEntity(dynamic model)
         {
@@ -17,29 +16,14 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic entity = new DynamicEntity();
-            entity.title = model.title;
-            entity.project = model.project;
             entity.assignee = model.assignee;
-            entity.status = model.status;
-
-            if (model.comment.GetType().Name == "String")
-            {
-                var commentList = new List<string>();
-                commentList.Add(model.comment);
-
-                entity.comment = JsonConvert.SerializeObject(commentList);
-            }
-            else
-            {
-                entity.comment = JsonConvert.SerializeObject(model.comment);
-            }
+            entity.comment = model.comment;
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
             {
                 entity.id = Guid.NewGuid();
                 entity.reported = DateTime.UtcNow;
-                entity.status = "open";
             }
             else
             {
@@ -61,14 +45,8 @@ namespace Lisa.Breakpoint.Api
 
             dynamic model = new DynamicModel();
             model.id = entity.id;
-            model.title = entity.title;
-            model.project = entity.project;
-            if (entity.assignee != null)
-            {
-                model.assignee = entity.assignee;
-            }
-            model.status = entity.status;
-            model.comment = JsonConvert.DeserializeObject(entity.comment);
+            model.assignee = entity.assignee;
+            model.comment = entity.comment;
             model.reported = entity.reported;
 
             var metadata = new

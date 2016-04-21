@@ -16,7 +16,8 @@ namespace Lisa.Breakpoint.Api
                     var error = new Error
                     {
                         Code = ErrorCode.EmptyValue,
-                        Message = $"Only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
+                        Message = $"In field '{fieldName}' only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
+                         
                         Values = new
                         {
                             Field = fieldName,
@@ -32,10 +33,11 @@ namespace Lisa.Breakpoint.Api
         protected override void ValidateModel()
         {
             Ignore("id");
-            Required("title", NotEmpty);
-            Required("project", NotEmpty);
-            Optional("assignee", NotEmpty);
-            Optional("status", ValidateArray, NotEmpty);
+            Required("title", NotEmpty, TypeOf(DataTypes.String));
+            Required("project", NotEmpty, TypeOf(DataTypes.String));
+            Optional("assignee", NotEmpty, TypeOf(DataTypes.String));
+            Optional("status", NotEmpty, ValidateArray);
+            Optional("comment", NotEmpty, TypeOf(DataTypes.String));
             Ignore("reported");
         }
 
@@ -43,6 +45,7 @@ namespace Lisa.Breakpoint.Api
         {
             Allow("status");
             Allow("assignee");
+            Allow("comment");
         }
     }
 }
