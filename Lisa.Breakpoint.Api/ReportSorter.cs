@@ -8,21 +8,54 @@ namespace Lisa.Breakpoint.Api
     {
         public static List<DynamicModel> Sort(IEnumerable<DynamicModel> reports, string sort, string order)
         {
-            foreach (string sortableField in sortableFields)
-            {
-                if (sort == sortableField)
+            string[] splittedSort = sort.Split(',');
+            string[] splittedOrder = order.Split(',');
+            if (splittedSort[1] != null) {
+                foreach (string sortableField in sortableFields)
                 {
-                    if (order.ToLower() == "asc")
+                    if (splittedSort[0] == sortableField)
                     {
-                        return reports.AsQueryable().OrderBy(r => r[sort]).ToList();
+                        if (splittedOrder[0].ToLower() == "asc" && splittedOrder[1].ToLower() == "asc")
+                        {
+                            return reports.AsQueryable().OrderBy(r => r[splittedSort[0]]).ThenBy(r => r[splittedSort[1]]).ToList();
+                        }
+                        else if (splittedOrder[0].ToLower() == "asc" && splittedOrder[1].ToLower() == "desc")
+                        {
+                            return reports.AsQueryable().OrderBy(r => r[splittedSort[0]]).ThenByDescending(r => r[splittedSort[1]]).ToList();
+                        }
+                        else if (splittedOrder[0].ToLower() == "desc" && splittedOrder[1].ToLower() == "asc")
+                        {
+                            return reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]).ThenBy(r => r[splittedSort[1]]).ToList();
+                        }
+                        else if (splittedOrder[0].ToLower() == "desc" && splittedOrder[1].ToLower() == "desc")
+                        {
+                            return reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]).ThenByDescending(r => r[splittedSort[1]]).ToList();
+                        }
+                        else
+                        {
+                            return reports.ToList();
+                        }
                     }
-                    else if (order.ToLower() == "desc")
+                }
+            }
+            else
+            {
+                foreach (string sortableField in sortableFields)
+                {
+                    if (splittedSort[0] == sortableField)
                     {
-                        return reports.AsQueryable().OrderByDescending(r => r[sort]).ToList();
-                    }
-                    else
-                    {
-                        return reports.ToList();
+                        if (splittedOrder[0].ToLower() == "asc")
+                        {
+                            return reports.AsQueryable().OrderBy(r => r[splittedSort[0]]).ToList();
+                        }
+                        else if (splittedOrder[0].ToLower() == "desc")
+                        {
+                            return reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]).ToList();
+                        }
+                        else
+                        {
+                            return reports.ToList();
+                        }
                     }
                 }
             }
