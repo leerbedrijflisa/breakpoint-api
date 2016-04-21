@@ -3,6 +3,7 @@ using Lisa.Common.WebApi;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Lisa.Breakpoint.Api
         
         public async Task<IEnumerable<DynamicModel>> FetchReports(List<Tuple<string, string>> filter)
         {
-            CloudTable table = await Connect();
+            CloudTable table = await Connect("Reports");
 
             var query = new TableQuery<DynamicEntity>();
 
@@ -37,7 +38,7 @@ namespace Lisa.Breakpoint.Api
 
         public async Task<DynamicModel> FetchReport(Guid id)
         {
-            CloudTable table = await Connect();
+            CloudTable table = await Connect("Reports");
 
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
             var report = await table.ExecuteQuerySegmentedAsync(query, null);
@@ -48,7 +49,7 @@ namespace Lisa.Breakpoint.Api
 
         public async Task<DynamicModel> SaveReport(dynamic report)
         {
-            CloudTable table = await Connect();
+            CloudTable table = await Connect("Reports");
 
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
@@ -61,10 +62,44 @@ namespace Lisa.Breakpoint.Api
 
             return result;
         }
+        
+        public async Task<DynamicModel> SaveComment(dynamic comment)
+        {
+            CloudTable table = await Connect("Comments");
+
+            dynamic commentEntity = CommentMapper.ToEntity(comment);
+
+            commentEntity.PartitionKey = "comment";
+            commentEntity.RowKey = commentEntity.id.ToString();
+
+            var InsertOperation = TableOperation.Insert(commentEntity);
+            await table.ExecuteAsync(InsertOperation);
+            var result = CommentMapper.ToModel(commentEntity);
+
+            return result;
+        }
+        
+        public async Task SaveCommentInReport(DynamicModel comment, DynamicModel report)
+        {
+            CloudTable table = await Connect("Reports");
+
+            dynamic commentEntity = CommentMapper.ToEntity(comment);
+            dynamic reportEntity = ReportMapper.ToEntity(report);
+
+            var commentList = JsonConvert.DeserializeObject<List<string>>(reportEntity.comment);
+
+            commentList.Add(commentEntity.comment.ToString());
+
+            reportEntity.comment = JsonConvert.SerializeObject(commentList);
+
+            var updateOperation = TableOperation.InsertOrReplace(reportEntity);
+
+            await table.ExecuteAsync(updateOperation);
+        }
 
         public async Task UpdateReport(DynamicModel report)
         {
-            CloudTable table = await Connect();
+            CloudTable table = await Connect("Reports");
 
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
@@ -73,11 +108,11 @@ namespace Lisa.Breakpoint.Api
             await table.ExecuteAsync(updateOperation);
         }
 
-        private async Task<CloudTable> Connect()
+        private async Task<CloudTable> Connect(string tableName)
         {
             var account = CloudStorageAccount.Parse(_settings.ConnectionString);
             var client = account.CreateCloudTableClient();
-            var table = client.GetTableReference("Reports");
+            var table = client.GetTableReference(tableName);
             await table.CreateIfNotExistsAsync();
 
             return table;

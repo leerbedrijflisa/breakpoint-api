@@ -1,7 +1,9 @@
 ﻿using Lisa.Common.TableStorage;
 using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -17,8 +19,38 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.title = model.title;
             entity.project = model.project;
-            entity.assignee = model.assignee;
+
+            if (model.assignee != null)
+            {
+                entity.assignee = model.assignee;
+            }
+            else
+            {
+                entity.assignee = " ";
+            }
+            
             entity.status = model.status;
+
+            if (model.comment != null)
+            {
+                var commentList = new List<string>();
+                if (model.comment.GetType().Name == "String")
+                {
+                    commentList.Add(model.comment);
+
+                    entity.comment = JsonConvert.SerializeObject(commentList);
+                }
+                else
+                {
+                    entity.comment = JsonConvert.SerializeObject(model.comment);
+                }
+            }
+            else
+            {
+                var commentList = new List<string>();
+                model.comment = JsonConvert.SerializeObject(commentList);
+                entity.comment = model.comment;
+            }
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -60,6 +92,7 @@ namespace Lisa.Breakpoint.Api
             }
 
             model.status = entity.status;
+            model.comment = JsonConvert.DeserializeObject(entity.comment);
             model.reported = entity.reported;
 
             var metadata = new
