@@ -86,11 +86,11 @@ namespace Lisa.Breakpoint.Api
             dynamic commentEntity = CommentMapper.ToEntity(comment);
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
-            var commentList = JsonConvert.DeserializeObject<List<string>>(reportEntity.comment);
+            var commentList = JsonConvert.DeserializeObject<List<string>>(reportEntity.comments);
 
             commentList.Add(commentEntity.comment.ToString());
 
-            reportEntity.comment = JsonConvert.SerializeObject(commentList);
+            reportEntity.comments = JsonConvert.SerializeObject(commentList);
 
             var updateOperation = TableOperation.InsertOrReplace(reportEntity);
 

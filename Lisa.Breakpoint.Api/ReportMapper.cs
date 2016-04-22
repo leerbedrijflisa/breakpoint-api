@@ -31,25 +31,25 @@ namespace Lisa.Breakpoint.Api
             
             entity.status = model.status;
 
-            if (model.comment != null)
+            if (model.comments != null)
             {
                 var commentList = new List<string>();
-                if (model.comment.GetType().Name == "String")
+                if (model.comments.GetType().Name == "String")
                 {
-                    commentList.Add(model.comment);
+                    commentList.Add(model.comments);
 
-                    entity.comment = JsonConvert.SerializeObject(commentList);
+                    entity.comments = JsonConvert.SerializeObject(commentList);
                 }
                 else
                 {
-                    entity.comment = JsonConvert.SerializeObject(model.comment);
+                    entity.comments = JsonConvert.SerializeObject(model.comments);
                 }
             }
             else
             {
                 var commentList = new List<string>();
-                model.comment = JsonConvert.SerializeObject(commentList);
-                entity.comment = model.comment;
+                model.comments = JsonConvert.SerializeObject(commentList);
+                entity.comments = model.comments;
             }
 
             dynamic metadata = model.GetMetadata();
@@ -92,7 +92,12 @@ namespace Lisa.Breakpoint.Api
             }
 
             model.status = entity.status;
-            model.comment = JsonConvert.DeserializeObject(entity.comment);
+
+            if (entity.comments != null)
+            {
+                model.comments = JsonConvert.DeserializeObject(entity.comments);
+            }
+
             model.reported = entity.reported;
 
             var metadata = new
