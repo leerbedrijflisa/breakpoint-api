@@ -3,7 +3,6 @@ using Lisa.Common.WebApi;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,6 +46,18 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
 
+        public async Task<IEnumerable<DynamicModel>> FetchComments(Guid id)
+        {
+            CloudTable table = await Connect("Comments");
+
+            string derp = id.ToString();
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, derp));
+            var comments = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = comments.Select(c => CommentMapper.ToModel(c));
+
+            return result;
+        }
+
         public async Task<DynamicModel> SaveReport(dynamic report)
         {
             CloudTable table = await Connect("Reports");
@@ -63,13 +74,13 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
         
-        public async Task<DynamicModel> SaveComment(dynamic comment)
+        public async Task<DynamicModel> SaveComment(dynamic comment, Guid id)
         {
             CloudTable table = await Connect("Comments");
 
             dynamic commentEntity = CommentMapper.ToEntity(comment);
 
-            commentEntity.PartitionKey = "comment";
+            commentEntity.PartitionKey = id.ToString();
             commentEntity.RowKey = commentEntity.id.ToString();
 
             var InsertOperation = TableOperation.Insert(commentEntity);
@@ -85,12 +96,6 @@ namespace Lisa.Breakpoint.Api
 
             dynamic commentEntity = CommentMapper.ToEntity(comment);
             dynamic reportEntity = ReportMapper.ToEntity(report);
-
-            var commentList = JsonConvert.DeserializeObject<List<string>>(reportEntity.comments);
-
-            commentList.Add(commentEntity.comment.ToString());
-
-            reportEntity.comments = JsonConvert.SerializeObject(commentList);
 
             var updateOperation = TableOperation.InsertOrReplace(reportEntity);
 

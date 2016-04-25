@@ -7,7 +7,7 @@ namespace Lisa.Breakpoint.Api
         protected override void ValidateModel()
         {
             Ignore("id");
-            Required("assignee", NotEmpty, TypeOf(DataTypes.String));
+            Required("username", NotEmpty, TypeOf(DataTypes.String));
             Required("comment", NotEmpty, TypeOf(DataTypes.String));
         }
 

@@ -33,7 +33,7 @@ namespace Lisa.Breakpoint.Api
                 return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
 
-            dynamic result = await _db.SaveComment(comment);
+            dynamic result = await _db.SaveComment(comment, id);
 
             await _db.SaveCommentInReport(comment, report);
 

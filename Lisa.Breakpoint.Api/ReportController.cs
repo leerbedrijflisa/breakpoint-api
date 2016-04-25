@@ -51,12 +51,21 @@ namespace Lisa.Breakpoint.Api
         [HttpGet("{id}", Name = "SingleReport")]
         public async Task<ActionResult> Get(Guid id)
         {
-            object report = await _db.FetchReport(id);
+            dynamic report = await _db.FetchReport(id);
 
             if (report == null)
             {
                 return new HttpNotFoundResult();
             }
+
+            dynamic comment = await _db.FetchComments(id);
+
+            if (comment == null)
+            {
+                return null;
+            }
+            report.comments = comment;
+
 
             return new HttpOkObjectResult(report);
         }

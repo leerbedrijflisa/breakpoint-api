@@ -3,7 +3,6 @@ using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -24,33 +23,9 @@ namespace Lisa.Breakpoint.Api
             {
                 entity.assignee = model.assignee;
             }
-            else
-            {
-                entity.assignee = " ";
-            }
             
             entity.status = model.status;
 
-            if (model.comments != null)
-            {
-                var commentList = new List<string>();
-                if (model.comments.GetType().Name == "String")
-                {
-                    commentList.Add(model.comments);
-
-                    entity.comments = JsonConvert.SerializeObject(commentList);
-                }
-                else
-                {
-                    entity.comments = JsonConvert.SerializeObject(model.comments);
-                }
-            }
-            else
-            {
-                var commentList = new List<string>();
-                model.comments = JsonConvert.SerializeObject(commentList);
-                entity.comments = model.comments;
-            }
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -92,12 +67,6 @@ namespace Lisa.Breakpoint.Api
             }
 
             model.status = entity.status;
-
-            if (entity.comments != null)
-            {
-                model.comments = JsonConvert.DeserializeObject(entity.comments);
-            }
-
             model.reported = entity.reported;
 
             var metadata = new
