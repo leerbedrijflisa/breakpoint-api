@@ -50,8 +50,8 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect("Comments");
 
-            string derp = id.ToString();
-            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, derp));
+            string newId = id.ToString();
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, newId));
             var comments = await table.ExecuteQuerySegmentedAsync(query, null);
             var result = comments.Select(c => CommentMapper.ToModel(c));
 
