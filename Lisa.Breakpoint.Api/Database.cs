@@ -54,8 +54,9 @@ namespace Lisa.Breakpoint.Api
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, newId));
             var comments = await table.ExecuteQuerySegmentedAsync(query, null);
             var result = comments.Select(c => CommentMapper.ToModel(c));
+            var sortedComments = ReportSorter.Sort(result, "datetime", "asc");
 
-            return result;
+            return sortedComments;
         }
 
         public async Task<DynamicModel> SaveReport(dynamic report)
@@ -88,18 +89,6 @@ namespace Lisa.Breakpoint.Api
             var result = CommentMapper.ToModel(commentEntity);
 
             return result;
-        }
-        
-        public async Task SaveCommentInReport(DynamicModel comment, DynamicModel report)
-        {
-            CloudTable table = await Connect("Reports");
-
-            dynamic commentEntity = CommentMapper.ToEntity(comment);
-            dynamic reportEntity = ReportMapper.ToEntity(report);
-
-            var updateOperation = TableOperation.InsertOrReplace(reportEntity);
-
-            await table.ExecuteAsync(updateOperation);
         }
 
         public async Task UpdateReport(DynamicModel report)

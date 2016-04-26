@@ -1,7 +1,6 @@
 ﻿using Lisa.Common.TableStorage;
 using Lisa.Common.WebApi;
 using Microsoft.WindowsAzure.Storage.Table;
-using Newtonsoft.Json;
 using System;
 
 namespace Lisa.Breakpoint.Api
