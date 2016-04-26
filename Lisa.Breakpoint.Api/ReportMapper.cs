@@ -23,7 +23,10 @@ namespace Lisa.Breakpoint.Api
             {
                 entity.assignee = model.assignee;
             }
-            
+            else
+            {
+                entity.assignee = " ";
+            }
             entity.status = model.status;
 
 
