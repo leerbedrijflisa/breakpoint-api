@@ -35,8 +35,6 @@ namespace Lisa.Breakpoint.Api
 
             dynamic result = await _db.SaveComment(comment, id);
 
-            await _db.SaveCommentInReport(comment, report);
-
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
             return new CreatedResult(location, result);
