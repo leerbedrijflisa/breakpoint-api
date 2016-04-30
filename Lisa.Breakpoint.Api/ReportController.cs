@@ -66,7 +66,6 @@ namespace Lisa.Breakpoint.Api
             }
             report.comments = comment;
 
-
             return new HttpOkObjectResult(report);
         }
 
