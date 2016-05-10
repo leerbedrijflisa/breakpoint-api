@@ -34,7 +34,7 @@ namespace Lisa.Breakpoint.Api
 
             var reports = await _db.FetchReports(filter);
 
-            if (sort == null || order == null)
+            if (sort == null)
             {
                 return new HttpOkObjectResult(reports);
             }

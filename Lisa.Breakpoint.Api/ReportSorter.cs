@@ -12,17 +12,20 @@ namespace Lisa.Breakpoint.Api
             {
                 if (sort == sortableField)
                 {
-                    if (order.ToLower() == "asc")
+                    if (order != null)
                     {
-                        return reports.AsQueryable().OrderBy(r => r[sort]).ToList();
-                    }
-                    else if (order.ToLower() == "desc")
-                    {
-                        return reports.AsQueryable().OrderByDescending(r => r[sort]).ToList();
+                        if (order.ToLower() == "desc")
+                        {
+                            return reports.AsQueryable().OrderByDescending(r => r[sort]).ToList();
+                        }
+                        if (order.ToLower() == "asc")
+                        {
+                            return reports.AsQueryable().OrderBy(r => r[sort]).ToList();
+                        }
                     }
                     else
                     {
-                        return reports.ToList();
+                        return reports.AsQueryable().OrderBy(r => r[sort]).ToList();
                     }
                 }
             }
