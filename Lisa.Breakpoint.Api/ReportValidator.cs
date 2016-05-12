@@ -7,7 +7,7 @@ namespace Lisa.Breakpoint.Api
     {
         private void ValidateArray(string fieldName, object value)
         {
-            string[] status = new string[] { "open", "fixed", "closed", "won't fix", "won't fix (approved)" };
+            string[] status = new string[] { "open", "fixed", "closed", "wontFix", "wontFixApproved" };
 
             if (value != null)
             {
@@ -16,7 +16,7 @@ namespace Lisa.Breakpoint.Api
                     var error = new Error
                     {
                         Code = ErrorCode.EmptyValue,
-                        Message = $"In field '{fieldName}' only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
+                        Message = $"In field '{fieldName}' only the values: open, fixed, closed, wontFix and wontFixApproved are allowed.",
                          
                         Values = new
                         {
