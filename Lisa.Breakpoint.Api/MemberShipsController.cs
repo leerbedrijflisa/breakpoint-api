@@ -33,6 +33,13 @@ namespace Lisa.Breakpoint.Api
                 return new BadRequestResult();
             }
 
+            var henk = await _db.CheckMembership(membership);
+
+            if (henk == null)
+            {
+                return new UnprocessableEntityObjectResult(membership);
+            }
+
             var validationResult = _validator.Validate(membership);
             if (validationResult.HasErrors)
             {

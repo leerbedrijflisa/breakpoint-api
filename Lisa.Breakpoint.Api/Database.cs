@@ -158,6 +158,25 @@ namespace Lisa.Breakpoint.Api
             return filterCondition;
         }
 
+        public async Task<DynamicModel> CheckMembership(DynamicModel membership)
+        {
+            CloudTable table = await Connect("Memberships");
+
+            dynamic membershipEntity = MemberShipsMapper.ToEntity(membership);
+
+            IEnumerable<DynamicModel> meep = await FetchMemberships(membershipEntity.project);
+
+            foreach (dynamic meeple in meep)
+            {
+                if (meeple.name == membershipEntity.name)
+                {
+                    return null;
+                }
+            }
+
+            return membership;
+        }
+
         private TableStorageSettings _settings;
     }
 }
