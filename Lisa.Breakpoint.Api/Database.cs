@@ -162,13 +162,13 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect("Memberships");
 
-            dynamic membershipEntity = MemberShipsMapper.ToEntity(membership);
+            dynamic membershipModel = membership;
 
-            IEnumerable<DynamicModel> meep = await FetchMemberships(membershipEntity.project);
+            IEnumerable<DynamicModel> membershipEntity = await FetchMemberships(membershipModel.project);
 
-            foreach (dynamic meeple in meep)
+            foreach (dynamic memberships in membershipEntity)
             {
-                if (meeple.name == membershipEntity.name)
+                if (memberships.name == membershipModel.name)
                 {
                     return null;
                 }
