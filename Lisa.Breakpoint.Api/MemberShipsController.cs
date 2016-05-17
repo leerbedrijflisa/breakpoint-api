@@ -1,5 +1,6 @@
 ﻿using Lisa.Common.WebApi;
 using Microsoft.AspNet.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace Lisa.Breakpoint.Api
@@ -36,7 +37,7 @@ namespace Lisa.Breakpoint.Api
             var membershipCheck = await _db.CheckMembership(membership);
             if (membershipCheck == null)
             {
-                var error = MemberShipsValidator.CheckMembership(membership);
+                var error = MemberShipsValidator.MembershipError(membership);
 
                 return new UnprocessableEntityObjectResult(error);
             }
@@ -52,6 +53,18 @@ namespace Lisa.Breakpoint.Api
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
             return new CreatedResult(location, result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteMembership(Guid id)
+        {
+            var membership = await _db.DeleteMembership(id);
+
+            if (!membership)
+            {
+                return new HttpNotFoundResult();
+            }
+            return new HttpStatusCodeResult(204);
         }
 
         private Database _db;

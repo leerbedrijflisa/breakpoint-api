@@ -129,6 +129,24 @@ namespace Lisa.Breakpoint.Api
             await table.ExecuteAsync(updateOperation);
         }
 
+        public async Task<bool> DeleteMembership(Guid id)
+        {
+            CloudTable table = await Connect("Memberships");
+
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
+            var membership = await table.ExecuteQuerySegmentedAsync(query, null);
+
+            if (membership.Count() == 0)
+            {
+                return false;
+            }
+
+            TableOperation deleteOperation = TableOperation.Delete(membership.FirstOrDefault());
+
+            await table.ExecuteAsync(deleteOperation);
+            return true;
+        }
+
         private async Task<CloudTable> Connect(string tableName)
         {
             var account = CloudStorageAccount.Parse(_settings.ConnectionString);
