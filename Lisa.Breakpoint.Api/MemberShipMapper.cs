@@ -5,7 +5,7 @@ using System;
 
 namespace Lisa.Breakpoint.Api
 {
-    public class MemberShipsMapper
+    public class MemberShipMapper
     {
         public static ITableEntity ToEntity(dynamic model)
         {

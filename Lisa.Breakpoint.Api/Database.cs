@@ -52,7 +52,7 @@ namespace Lisa.Breakpoint.Api
 
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("project", QueryComparisons.Equal, projectName));
             var membership = await table.ExecuteQuerySegmentedAsync(query, null);
-            var result = membership.Select(m => MemberShipsMapper.ToModel(m));
+            var result = membership.Select(m => MemberShipMapper.ToModel(m));
 
             return result;
         }
@@ -106,14 +106,14 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect("Memberships");
 
-            dynamic membershipEntity = MemberShipsMapper.ToEntity(membership);
+            dynamic membershipEntity = MemberShipMapper.ToEntity(membership);
 
             membershipEntity.PartitionKey = membershipEntity.project;
             membershipEntity.RowKey = membershipEntity.id.ToString();
 
             var InsertOperation = TableOperation.Insert(membershipEntity);
             await table.ExecuteAsync(InsertOperation);
-            var result = MemberShipsMapper.ToModel(membershipEntity);
+            var result = MemberShipMapper.ToModel(membershipEntity);
 
             return result;
         }
@@ -186,7 +186,7 @@ namespace Lisa.Breakpoint.Api
 
             foreach (dynamic memberships in membershipEntity)
             {
-                if (memberships.name == membershipModel.name)
+                if (memberships.userName == membershipModel.userName)
                 {
                     return null;
                 }

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Lisa.Breakpoint.Api
 {
-    public class MemberShipsValidator : Validator
+    public class MemberShipValidator : Validator
     {
         private void ValidateRole(string fieldName, object value)
         {
