@@ -15,21 +15,26 @@ namespace Lisa.Breakpoint.Api
                 {
                     if (splittedSort[0] == sortableField)
                     {
-                        if (splittedOrder[0].ToLower() == "asc" && splittedOrder[1].ToLower() == "asc")
+                        var orderByAscending = reports.AsQueryable().OrderBy(r => r[splittedSort[0]]);
+                        var orderByDescending = reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]);
+                        var splittedOrder0 = splittedOrder[0].ToLower();
+                        var splittedOrder1 = splittedOrder[1].ToLower();
+
+                        if (splittedOrder0 == "asc" && splittedOrder1 == "asc")
                         {
-                            return reports.AsQueryable().OrderBy(r => r[splittedSort[0]]).ThenBy(r => r[splittedSort[1]]).ToList();
+                            return orderByAscending.ThenBy(r => r[splittedSort[1]]).ToList();
                         }
-                        else if (splittedOrder[0].ToLower() == "asc" && splittedOrder[1].ToLower() == "desc")
+                        else if (splittedOrder0 == "asc" && splittedOrder1 == "desc")
                         {
-                            return reports.AsQueryable().OrderBy(r => r[splittedSort[0]]).ThenByDescending(r => r[splittedSort[1]]).ToList();
+                            return orderByAscending.ThenByDescending(r => r[splittedSort[1]]).ToList();
                         }
-                        else if (splittedOrder[0].ToLower() == "desc" && splittedOrder[1].ToLower() == "asc")
+                        else if (splittedOrder0 == "desc" && splittedOrder1 == "asc")
                         {
-                            return reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]).ThenBy(r => r[splittedSort[1]]).ToList();
+                            return orderByDescending.ThenBy(r => r[splittedSort[1]]).ToList();
                         }
-                        else if (splittedOrder[0].ToLower() == "desc" && splittedOrder[1].ToLower() == "desc")
+                        else if (splittedOrder0 == "desc" && splittedOrder1 == "desc")
                         {
-                            return reports.AsQueryable().OrderByDescending(r => r[splittedSort[0]]).ThenByDescending(r => r[splittedSort[1]]).ToList();
+                            return orderByDescending.ThenByDescending(r => r[splittedSort[1]]).ToList();
                         }
                         else
                         {
