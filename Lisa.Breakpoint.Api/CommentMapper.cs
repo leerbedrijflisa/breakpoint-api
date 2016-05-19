@@ -23,13 +23,17 @@ namespace Lisa.Breakpoint.Api
             {
                 entity.id = Guid.NewGuid();
                 entity.datetime = DateTime.UtcNow;
+                entity.deleted = false;
+                entity.deletionDate = " ";
             }
             else
             {
                 entity.id = model.id;
                 entity.datetime = model.datetime;
+                entity.deleted = model.deleted;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
+                entity.deletionDate = model.deletionDate;
             }
 
             return entity;
@@ -47,6 +51,8 @@ namespace Lisa.Breakpoint.Api
             model.username = entity.username;
             model.comment = entity.comment;
             model.datetime = entity.datetime;
+            model.deleted = entity.deleted;
+            model.deletionDate = entity.deletionDate;
 
             var metadata = new
             {

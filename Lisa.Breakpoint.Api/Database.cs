@@ -46,7 +46,19 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
 
-        public async Task<IEnumerable<DynamicModel>> FetchComments(Guid id)
+        public async Task<DynamicModel> FetchComment(Guid id)
+        {
+            CloudTable table = await Connect("Comments");
+
+            string newId = id.ToString();
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, newId));
+            var comment = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = comment.Select(r => CommentMapper.ToModel(r)).SingleOrDefault();
+
+            return result;
+        }
+        
+        public async Task<DynamicModel[]> FetchComments(Guid id)
         {
             CloudTable table = await Connect("Comments");
 
@@ -56,7 +68,7 @@ namespace Lisa.Breakpoint.Api
             var result = comments.Select(c => CommentMapper.ToModel(c));
             var sortedComments = ReportSorter.Sort(result, "datetime", "asc");
 
-            return sortedComments;
+            return sortedComments.ToArray();
         }
 
         public async Task<DynamicModel> SaveReport(dynamic report)
@@ -98,6 +110,17 @@ namespace Lisa.Breakpoint.Api
             dynamic reportEntity = ReportMapper.ToEntity(report);
 
             var updateOperation = TableOperation.InsertOrReplace(reportEntity);
+
+            await table.ExecuteAsync(updateOperation);
+        }
+
+        public async Task UpdateComment(DynamicModel comment)
+        {
+            CloudTable table = await Connect("comments");
+
+            dynamic commentEntity = CommentMapper.ToEntity(comment);
+
+            var updateOperation = TableOperation.InsertOrReplace(commentEntity);
 
             await table.ExecuteAsync(updateOperation);
         }
