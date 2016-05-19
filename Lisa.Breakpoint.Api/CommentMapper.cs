@@ -24,7 +24,7 @@ namespace Lisa.Breakpoint.Api
                 entity.id = Guid.NewGuid();
                 entity.datetime = DateTime.UtcNow;
                 entity.deleted = false;
-                entity.deletionDate = " ";
+                entity.deletionDate = "";
             }
             else
             {

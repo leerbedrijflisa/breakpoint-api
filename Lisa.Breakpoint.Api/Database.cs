@@ -58,7 +58,7 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
         
-        public async Task<DynamicModel[]> FetchComments(Guid id)
+        public async Task<IEnumerable<DynamicModel>> FetchComments(Guid id)
         {
             CloudTable table = await Connect("Comments");
 
@@ -68,7 +68,7 @@ namespace Lisa.Breakpoint.Api
             var result = comments.Select(c => CommentMapper.ToModel(c));
             var sortedComments = ReportSorter.Sort(result, "datetime", "asc");
 
-            return sortedComments.ToArray();
+            return sortedComments;
         }
 
         public async Task<DynamicModel> SaveReport(dynamic report)

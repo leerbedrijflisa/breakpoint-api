@@ -18,7 +18,6 @@ namespace Lisa.Breakpoint.Api
         {
             Allow("comment");
             Allow("deleted");
-            Allow("deletionDate");
         }
     }
 }

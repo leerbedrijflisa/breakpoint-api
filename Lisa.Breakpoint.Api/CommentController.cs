@@ -67,6 +67,7 @@ namespace Lisa.Breakpoint.Api
                 if (patches[i].Field == "deleted")
                 {
                     int newIndex = patches.Length;
+
                     Array.Resize(ref patches, patches.Length + 1);
                     patches[newIndex] = new Patch();
 
@@ -88,12 +89,7 @@ namespace Lisa.Breakpoint.Api
 
             patcher.Apply(patches, comment);
             await _db.UpdateComment(comment);
-
-            if (comment.deleted)
-            {
-                comment.comment = "Deze comment was verwijderd op " + comment.deletionDate;
-            }
-
+            
             return new HttpOkObjectResult(comment);
         }
 
