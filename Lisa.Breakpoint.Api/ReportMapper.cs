@@ -20,7 +20,18 @@ namespace Lisa.Breakpoint.Api
 
             if (model.assignee != null)
             {
-                entity.assignee = model.assignee;
+                if (!model.assignee.Contains("userName") && !model.assignee.Contains("group"))
+                {
+                    entity.assignee = model.assignee;
+                }
+                else if (model.assignee.userName != null)
+                {
+                    entity.assignee = "userName: " + model.assignee.userName;
+                }
+                else if (model.assignee.group != null)
+                {
+                    entity.assignee = "group: " + model.assignee.group;
+                }
             }
             
             entity.status = model.status;

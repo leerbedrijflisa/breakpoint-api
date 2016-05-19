@@ -73,18 +73,25 @@ namespace Lisa.Breakpoint.Api
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DynamicModel report)
         {
-            if (report == null)
+            dynamic dynamicReport = report;
+            dynamic goodReport = report;
+            if (!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group"))
+            {
+                return new BadRequestResult();
+            }
+            goodReport.assignee = dynamicReport.assignee.userName;
+            if (goodReport == null)
             {
                 return new BadRequestResult();
             }
 
-            var validationResult = _validator.Validate(report);
+            var validationResult = _validator.Validate(goodReport);
             if (validationResult.HasErrors)
             {
                 return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
 
-            dynamic result = await _db.SaveReport(report);
+            dynamic result = await _db.SaveReport(goodReport);
 
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
@@ -94,6 +101,7 @@ namespace Lisa.Breakpoint.Api
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch([FromBody] Patch[] patches, Guid id)
         {
+        
             if (patches == null)
             {
                 return new BadRequestResult();
