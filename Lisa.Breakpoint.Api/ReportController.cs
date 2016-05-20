@@ -59,11 +59,6 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic comment = await _db.FetchComments(id);
-
-            if (comment == null)
-            {
-                return null;
-            }
             report.comments = comment;
 
             return new HttpOkObjectResult(report);

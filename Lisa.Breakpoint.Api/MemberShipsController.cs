@@ -12,12 +12,33 @@ namespace Lisa.Breakpoint.Api
             _db = database;
         }
 
+        [HttpGet("{projectName}", Name = "SingleMembership")]
+        public async Task<ActionResult> Get(string projectName)
+        {
+            dynamic membership = await _db.FetchMemberships(projectName);
+
+            if (membership == null)
+            {
+                return new HttpNotFoundResult();
+            }
+
+            return new HttpOkObjectResult(membership);
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DynamicModel membership)
         {
             if (membership == null)
             {
                 return new BadRequestResult();
+            }
+
+            var membershipCheck = await _db.CheckMembership(membership);
+            if (membershipCheck == null)
+            {
+                var error = MemberShipsValidator.CheckMembership(membership);
+
+                return new UnprocessableEntityObjectResult(error);
             }
 
             var validationResult = _validator.Validate(membership);
