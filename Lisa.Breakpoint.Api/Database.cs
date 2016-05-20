@@ -108,6 +108,7 @@ namespace Lisa.Breakpoint.Api
 
             dynamic membershipEntity = MemberShipMapper.ToEntity(membership);
 
+            membershipEntity.userName = membershipEntity.userName.ToString().ToLower();
             membershipEntity.PartitionKey = membershipEntity.project;
             membershipEntity.RowKey = membershipEntity.id.ToString();
 
@@ -181,6 +182,8 @@ namespace Lisa.Breakpoint.Api
             CloudTable table = await Connect("Memberships");
 
             dynamic membershipModel = membership;
+
+            membershipModel.userName = membershipModel.userName.ToString().ToLower();
 
             IEnumerable<DynamicModel> membershipEntity = await FetchMemberships(membershipModel.project);
 
