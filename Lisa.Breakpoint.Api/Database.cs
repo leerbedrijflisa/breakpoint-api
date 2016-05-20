@@ -91,6 +91,22 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
 
+        public async Task<DynamicModel> SaveMembership(dynamic membership)
+        {
+            CloudTable table = await Connect("Memberships");
+
+            dynamic membershipEntity = MemberShipsMapper.ToEntity(membership);
+
+            membershipEntity.PartitionKey = membershipEntity.project;
+            membershipEntity.RowKey = membershipEntity.id.ToString();
+
+            var InsertOperation = TableOperation.Insert(membershipEntity);
+            await table.ExecuteAsync(InsertOperation);
+            var result = MemberShipsMapper.ToModel(membershipEntity);
+
+            return result;
+        }
+
         public async Task UpdateReport(DynamicModel report)
         {
             CloudTable table = await Connect("Reports");

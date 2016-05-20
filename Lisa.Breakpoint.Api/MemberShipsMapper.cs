@@ -5,7 +5,7 @@ using System;
 
 namespace Lisa.Breakpoint.Api
 {
-    public class ReportMapper
+    public class MemberShipsMapper
     {
         public static ITableEntity ToEntity(dynamic model)
         {
@@ -15,31 +15,19 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic entity = new DynamicEntity();
-            entity.title = model.title;
+            entity.userName = model.userName;
             entity.project = model.project;
-
-            if (model.assignee != null)
-            {
-                entity.assignee = model.assignee;
-            }
-            else
-            {
-                entity.assignee = " ";
-            }
-            entity.status = model.status;
-
+            entity.role = model.role;
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
             {
                 entity.id = Guid.NewGuid();
-                entity.reported = DateTime.UtcNow;
-                entity.status = "open";
+                entity.datetime = DateTime.UtcNow;
             }
             else
             {
                 entity.id = model.id;
-                entity.reported = model.reported;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
             }
@@ -56,20 +44,9 @@ namespace Lisa.Breakpoint.Api
 
             dynamic model = new DynamicModel();
             model.id = entity.id;
-            model.title = entity.title;
+            model.userName = entity.userName;
             model.project = entity.project;
-
-            if (entity.assignee != null)
-            {
-                model.assignee = entity.assignee;
-            }
-            else
-            {
-                model.assignee = "";
-            }
-
-            model.status = entity.status;
-            model.reported = entity.reported;
+            model.role = entity.role;
 
             var metadata = new
             {
