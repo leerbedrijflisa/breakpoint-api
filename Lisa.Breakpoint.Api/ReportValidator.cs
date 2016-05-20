@@ -5,30 +5,30 @@ namespace Lisa.Breakpoint.Api
 {
     public class ReportValidator : Validator
     {
-        private void ValidateArray(string fieldName, object value)
-        {
-            string[] status = new string[] { "open", "fixed", "closed", "won't fix", "won't fix (approved)" };
+        //private void ValidateArray(string fieldName, object value)
+        //{
+        //    string[] status = new string[] { "open", "fixed", "closed", "won't fix", "won't fix (approved)" };
 
-            if (value != null)
-            {
-                if (!status.Contains(value))
-                {
-                    var error = new Error
-                    {
-                        Code = ErrorCode.EmptyValue,
-                        Message = $"In field '{fieldName}' only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
+        //    if (value != null)
+        //    {
+        //        if (!status.Contains(value))
+        //        {
+        //            var error = new Error
+        //            {
+        //                Code = ErrorCode.EmptyValue,
+        //                Message = $"In field '{fieldName}' only the values: open, fixed, closed, won't fix and won't fix (approved) are allowed.",
                          
-                        Values = new
-                        {
-                            Field = fieldName,
-                            Value = value,
-                            ExpectedValues = status
-                        }
-                    };
-                    Result.Errors.Add(error);
-                }
-            }
-        }
+        //                Values = new
+        //                {
+        //                    Field = fieldName,
+        //                    Value = value,
+        //                    ExpectedValues = status
+        //                }
+        //            };
+        //            Result.Errors.Add(error);
+        //        }
+        //    }
+        //}
 
         protected override void ValidateModel()
         {

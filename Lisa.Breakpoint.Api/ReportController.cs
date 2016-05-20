@@ -75,11 +75,21 @@ namespace Lisa.Breakpoint.Api
         {
             dynamic dynamicReport = report;
             dynamic goodReport = report;
+            string assigneeType = null;
             if (!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group"))
             {
                 return new BadRequestResult();
             }
-            goodReport.assignee = dynamicReport.assignee.userName;
+            if (dynamicReport.assignee.Contains("userName"))
+            {
+                assigneeType = "userName";
+                goodReport.assignee = dynamicReport.assignee.userName;
+            }
+            else if(dynamicReport.assignee.Contains("group"))
+            {
+                assigneeType = "group";
+                goodReport.assignee = dynamicReport.assignee.group;
+            }
             if (goodReport == null)
             {
                 return new BadRequestResult();
@@ -90,8 +100,9 @@ namespace Lisa.Breakpoint.Api
             {
                 return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
-
+            
             dynamic result = await _db.SaveReport(goodReport);
+            result.assignee = $"{assigneeType}: " + result.assignee;
 
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
