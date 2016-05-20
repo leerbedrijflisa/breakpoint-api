@@ -52,7 +52,7 @@ namespace Lisa.Breakpoint.Api
 
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("project", QueryComparisons.Equal, projectName));
             var membership = await table.ExecuteQuerySegmentedAsync(query, null);
-            var result = membership.Select(m => MemberShipsMapper.ToModel(m));
+            var result = membership.Select(m => MemberShipMapper.ToModel(m));
 
             return result;
         }
@@ -106,14 +106,15 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect("Memberships");
 
-            dynamic membershipEntity = MemberShipsMapper.ToEntity(membership);
+            dynamic membershipEntity = MemberShipMapper.ToEntity(membership);
 
+            membershipEntity.userName = membershipEntity.userName.ToString().ToLower();
             membershipEntity.PartitionKey = membershipEntity.project;
             membershipEntity.RowKey = membershipEntity.id.ToString();
 
             var InsertOperation = TableOperation.Insert(membershipEntity);
             await table.ExecuteAsync(InsertOperation);
-            var result = MemberShipsMapper.ToModel(membershipEntity);
+            var result = MemberShipMapper.ToModel(membershipEntity);
 
             return result;
         }
@@ -127,6 +128,24 @@ namespace Lisa.Breakpoint.Api
             var updateOperation = TableOperation.InsertOrReplace(reportEntity);
 
             await table.ExecuteAsync(updateOperation);
+        }
+
+        public async Task<bool> DeleteMembership(Guid id)
+        {
+            CloudTable table = await Connect("Memberships");
+
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
+            var membership = await table.ExecuteQuerySegmentedAsync(query, null);
+
+            if (membership.Count() == 0)
+            {
+                return false;
+            }
+
+            TableOperation deleteOperation = TableOperation.Delete(membership.FirstOrDefault());
+
+            await table.ExecuteAsync(deleteOperation);
+            return true;
         }
 
         private async Task<CloudTable> Connect(string tableName)
@@ -164,11 +183,13 @@ namespace Lisa.Breakpoint.Api
 
             dynamic membershipModel = membership;
 
+            membershipModel.userName = membershipModel.userName.ToString().ToLower();
+
             IEnumerable<DynamicModel> membershipEntity = await FetchMemberships(membershipModel.project);
 
             foreach (dynamic memberships in membershipEntity)
             {
-                if (memberships.name == membershipModel.name)
+                if (memberships.userName == membershipModel.userName)
                 {
                     return null;
                 }
