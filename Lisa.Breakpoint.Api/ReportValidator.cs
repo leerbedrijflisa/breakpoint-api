@@ -5,6 +5,31 @@ namespace Lisa.Breakpoint.Api
 {
     public class ReportValidator : Validator
     {
+        private void ValidateArray(string fieldName, object value)
+        {
+            string[] status = new string[] { "open", "fixed", "closed", "wontFix", "wontFixApproved" };
+
+            if (value != null)
+            {
+                if (!status.Contains(value))
+                {
+                    var error = new Error
+                    {
+                        Code = ErrorCode.EmptyValue,
+                        Message = $"In field '{fieldName}' only the values: open, fixed, closed, wontFix and wontFixApproved are allowed.",
+                         
+                        Values = new
+                        {
+                            Field = fieldName,
+                            Value = value,
+                            ExpectedValues = status
+                        }
+                    };
+                    Result.Errors.Add(error);
+                }
+            }
+        }
+        
         protected override void ValidateModel()
         {
             Ignore("id");

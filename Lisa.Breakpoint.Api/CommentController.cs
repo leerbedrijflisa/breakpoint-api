@@ -48,24 +48,49 @@ namespace Lisa.Breakpoint.Api
                 return new BadRequestResult();
             }
 
-            var report = await _db.FetchReport(id);
-            if (report == null)
+            dynamic comment = await _db.FetchComment(id);
+
+            if (comment == null)
             {
                 return new HttpNotFoundResult();
             }
 
-            var validationResult = _validator.Validate(patches, report);
+            var validationResult = _validator.Validate(patches, comment);
+
             if (validationResult.HasErrors)
             {
                 return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
 
+            for (int i = 0; i < patches.Length; i++)
+            {
+                if (patches[i].Field == "deleted")
+                {
+                    int newIndex = patches.Length;
+
+                    Array.Resize(ref patches, patches.Length + 1);
+                    patches[newIndex] = new Patch();
+
+                    patches[newIndex].Action = "replace";
+                    patches[newIndex].Field = "deletionDate";
+
+                    if (Convert.ToBoolean(patches[i].Value))
+                    {
+                        patches[newIndex].Value = DateTime.UtcNow;
+                    }
+                    else
+                    {
+                        patches[newIndex].Value = "";
+                    }
+                }
+            }
+
             var patcher = new ModelPatcher();
 
-            patcher.Apply(patches, report);
-            await _db.UpdateReport(report);
-
-            return new HttpOkObjectResult(report);
+            patcher.Apply(patches, comment);
+            await _db.UpdateComment(comment);
+            
+            return new HttpOkObjectResult(comment);
         }
 
         private Database _db;

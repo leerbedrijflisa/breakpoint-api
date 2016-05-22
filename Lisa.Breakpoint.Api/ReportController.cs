@@ -57,9 +57,15 @@ namespace Lisa.Breakpoint.Api
             {
                 return new HttpNotFoundResult();
             }
+            
+            dynamic comments = await _db.FetchComments(id);
 
-            dynamic comment = await _db.FetchComments(id);
-            report.comments = comment;
+            if (comments == null)
+            {
+                return null;
+            }
+            
+            report.comments = comments;
 
             return new HttpOkObjectResult(report);
         }
