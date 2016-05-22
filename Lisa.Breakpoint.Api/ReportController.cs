@@ -25,7 +25,19 @@ namespace Lisa.Breakpoint.Api
             }
             if (status != null)
             {
-                filter.Add(Tuple.Create("status", status));
+                if (status.Contains(","))
+                {
+                    string[] statusArray = status.Split(',');
+
+                    foreach (var statusFilter in statusArray)
+                    {
+                        filter.Add(Tuple.Create("status", statusFilter));
+                    }
+                }
+                else
+                {
+                    filter.Add(Tuple.Create("status", status));
+                }
             }
             if (assignee != null)
             {

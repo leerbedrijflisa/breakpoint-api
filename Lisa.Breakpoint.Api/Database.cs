@@ -189,11 +189,20 @@ namespace Lisa.Breakpoint.Api
             {
                 for (int i = 1; i < filter.Count; i++)
                 {
-
-                    filterCondition = TableQuery.CombineFilters(
+                    if (filter[i].Item1 == filter[i-1].Item1)
+                    {
+                        filterCondition = TableQuery.CombineFilters(
+                                      TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2),
+                                      TableOperators.Or,
+                                      filterCondition);
+                    }
+                    else
+                    {
+                        filterCondition = TableQuery.CombineFilters(
                                       TableQuery.GenerateFilterCondition(filter[i].Item1, QueryComparisons.Equal, filter[i].Item2),
                                       TableOperators.And,
                                       filterCondition);
+                    }
                 }
             }
 
