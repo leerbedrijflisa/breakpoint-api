@@ -88,20 +88,28 @@ namespace Lisa.Breakpoint.Api
             dynamic dynamicReport = report;
             dynamic goodReport = report;
             string assigneeType = null;
-            if ((!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group")) || goodReport == null)
+            if(dynamicReport.assignee != null)
+            {
+                if (!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group"))
+                {
+                    return new BadRequestResult();
+                }
+                if (dynamicReport.assignee.Contains("userName"))
+                {
+                    assigneeType = "userName";
+                    goodReport.assignee = dynamicReport.assignee.userName;
+                }
+                else if (dynamicReport.assignee.Contains("group"))
+                {
+                    assigneeType = "group";
+                    goodReport.assignee = dynamicReport.assignee.group;
+                }
+            }
+            if(goodReport == null)
             {
                 return new BadRequestResult();
             }
-            if (dynamicReport.assignee.Contains("userName"))
-            {
-                assigneeType = "userName";
-                goodReport.assignee = dynamicReport.assignee.userName;
-            }
-            else if(dynamicReport.assignee.Contains("group"))
-            {
-                assigneeType = "group";
-                goodReport.assignee = dynamicReport.assignee.group;
-            }
+
             var validationResult = _validator.Validate(goodReport);
             if (validationResult.HasErrors)
             {
