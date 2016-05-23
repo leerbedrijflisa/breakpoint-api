@@ -117,7 +117,15 @@ namespace Lisa.Breakpoint.Api
             }
             
             dynamic result = await _db.SaveReport(goodReport);
-            result.assignee = $"{assigneeType}: " + result.assignee;
+            if(goodReport.assignee != null)
+            {
+                result.assignee = $"{assigneeType}: " + result.assignee;
+            }
+            else
+            {
+                result.assignee = "";
+            }
+
 
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
