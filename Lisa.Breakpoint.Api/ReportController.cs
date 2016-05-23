@@ -92,7 +92,12 @@ namespace Lisa.Breakpoint.Api
             {
                 if (!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group"))
                 {
-                    return new BadRequestResult();
+                    List<string> error = new List<string>();
+                    error.Add("ErrorCode: 25737");
+                    error.Add("Field: assignee");
+                    error.Add("Description: The field 'assignee' does not contain a valid parameter, valid parameters are 'userName' or 'group'");         
+
+                    return new UnprocessableEntityObjectResult(error);
                 }
                 if (dynamicReport.assignee.Contains("userName"))
                 {
