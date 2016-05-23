@@ -164,6 +164,14 @@ namespace Lisa.Breakpoint.Api
             return new HttpOkObjectResult(report);
         }
 
+        [HttpDelete("deleteAllTablesX0X0")]
+        public async Task<ActionResult> DeleteMembership()
+        {
+            await _db.DeleteAll();
+
+            return new HttpStatusCodeResult(418);
+        }
+
         private Database _db;
         private Validator _validator = new ReportValidator();
     }

@@ -15,7 +15,7 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic entity = new DynamicEntity();
-            entity.username = model.username;
+            entity.userName = model.userName;
             entity.comment = model.comment;
 
             dynamic metadata = model.GetMetadata();
@@ -48,7 +48,7 @@ namespace Lisa.Breakpoint.Api
 
             dynamic model = new DynamicModel();
             model.id = entity.id;
-            model.username = entity.username;
+            model.userName = entity.userName;
             model.comment = entity.comment;
             model.datetime = entity.datetime;
             model.deleted = entity.deleted;

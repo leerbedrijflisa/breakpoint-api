@@ -230,6 +230,20 @@ namespace Lisa.Breakpoint.Api
             return membership;
         }
 
+        public async Task DeleteAll()
+        {
+            var account = CloudStorageAccount.Parse(_settings.ConnectionString);
+            CloudTableClient tableClient = account.CreateCloudTableClient();
+            CloudTable table = tableClient.GetTableReference("reports");
+            await table.DeleteIfExistsAsync();
+
+            CloudTable table2 = tableClient.GetTableReference("comments");
+            await table2.DeleteIfExistsAsync();
+
+            CloudTable table3 = tableClient.GetTableReference("memberships");
+            await table3.DeleteIfExistsAsync();
+        }
+
         private TableStorageSettings _settings;
     }
 }
