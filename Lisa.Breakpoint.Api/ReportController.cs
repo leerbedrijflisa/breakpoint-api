@@ -9,6 +9,7 @@ namespace Lisa.Breakpoint.Api
     [Route("/reports/")]
     public class ReportController : Controller
     {
+        
         public ReportController(Database database)
         {
             _db = database;
@@ -85,6 +86,12 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic result = await _db.SaveReport(report);
+
+            if (result == null)
+            {
+                Console.WriteLine("Unauthorized catch");
+                //return new HttpUnauthorizedResult();
+            }
 
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 

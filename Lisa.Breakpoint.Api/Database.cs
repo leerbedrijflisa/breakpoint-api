@@ -5,6 +5,7 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -64,6 +65,17 @@ namespace Lisa.Breakpoint.Api
             CloudTable table = await Connect("Reports");
 
             dynamic reportEntity = ReportMapper.ToEntity(report);
+
+            var reportIssuer = TokenValidator.ValidateAndReadSentToken(report.token);
+
+            if (reportIssuer == null)
+            {
+                return null;
+            }
+            else
+            {
+                reportEntity.UserName = reportIssuer;
+            }
 
             reportEntity.PartitionKey = reportEntity.project;
             reportEntity.RowKey = reportEntity.id.ToString();
