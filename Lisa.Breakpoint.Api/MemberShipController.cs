@@ -34,18 +34,18 @@ namespace Lisa.Breakpoint.Api
                 return new BadRequestResult();
             }
 
+            var validationResult = _validator.Validate(membership);
+            if (validationResult.HasErrors)
+            {
+                return new UnprocessableEntityObjectResult(validationResult.Errors);
+            }
+
             var membershipCheck = await _db.CheckMembership(membership);
             if (membershipCheck == null)
             {
                 var error = MemberShipValidator.MembershipError(membership);
 
                 return new UnprocessableEntityObjectResult(error);
-            }
-
-            var validationResult = _validator.Validate(membership);
-            if (validationResult.HasErrors)
-            {
-                return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
 
             dynamic result = await _db.SaveMembership(membership);
