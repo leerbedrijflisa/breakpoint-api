@@ -19,7 +19,6 @@
   "frameworks": {
     "dnx451": {
       "dependencies": {
-        "Microsoft.Data.Edm": "5.7.0"
       }
     },
     "dnxcore50": { }
