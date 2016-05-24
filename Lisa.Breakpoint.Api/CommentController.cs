@@ -1,5 +1,5 @@
 ﻿using Lisa.Common.WebApi;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace Lisa.Breakpoint.Api
             var report = await _db.FetchReport(id);
             if (report == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
 
             var validationResult = _validator.Validate(comment);
@@ -52,7 +52,7 @@ namespace Lisa.Breakpoint.Api
 
             if (comment == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
 
             var validationResult = _validator.Validate(patches, comment);
@@ -90,7 +90,7 @@ namespace Lisa.Breakpoint.Api
             patcher.Apply(patches, comment);
             await _db.UpdateComment(comment);
             
-            return new HttpOkObjectResult(comment);
+            return new OkObjectResult(comment);
         }
 
         private Database _db;
