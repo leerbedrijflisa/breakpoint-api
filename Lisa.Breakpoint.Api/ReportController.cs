@@ -1,5 +1,5 @@
 ﻿using Lisa.Common.WebApi;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -48,7 +48,7 @@ namespace Lisa.Breakpoint.Api
 
             if (sort == null)
             {
-                return new HttpOkObjectResult(reports);
+                return new OkObjectResult(reports);
             }
 
             var result = ReportSorter.Sort(reports, sort, order);
@@ -57,7 +57,7 @@ namespace Lisa.Breakpoint.Api
             {
                 return new UnprocessableEntityObjectResult("{\n'errorCode': 50134,\n'errorMessage': 'Sort is not valid'\n}");
             }
-            return new HttpOkObjectResult(result);
+            return new OkObjectResult(result);
         }
 
         [HttpGet("{id}", Name = "SingleReport")]
@@ -67,7 +67,7 @@ namespace Lisa.Breakpoint.Api
 
             if (report == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
             
             dynamic comments = await _db.FetchComments(id);
@@ -79,7 +79,7 @@ namespace Lisa.Breakpoint.Api
             
             report.comments = comments;
 
-            return new HttpOkObjectResult(report);
+            return new OkObjectResult(report);
         }
 
         [HttpPost]
@@ -147,7 +147,7 @@ namespace Lisa.Breakpoint.Api
             var report = await _db.FetchReport(id);
             if (report == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
 
             var validationResult = _validator.Validate(patches, report);
@@ -161,7 +161,7 @@ namespace Lisa.Breakpoint.Api
             patcher.Apply(patches, report);
             await _db.UpdateReport(report);
 
-            return new HttpOkObjectResult(report);
+            return new OkObjectResult(report);
         }
 
         [HttpDelete("deleteAllTablesX0X0")]
@@ -169,7 +169,7 @@ namespace Lisa.Breakpoint.Api
         {
             await _db.DeleteAll();
 
-            return new HttpStatusCodeResult(418);
+            return new StatusCodeResult(418);
         }
 
         private Database _db;

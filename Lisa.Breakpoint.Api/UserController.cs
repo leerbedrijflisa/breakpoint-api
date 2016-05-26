@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNet.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace Lisa.Breakpoint.Api
                     }
                 }
             }
-            return new HttpOkObjectResult(users);
+            return new OkObjectResult(users);
         }
 
         private Database _db;

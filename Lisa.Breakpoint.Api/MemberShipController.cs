@@ -1,5 +1,5 @@
 ﻿using Lisa.Common.WebApi;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
@@ -20,10 +20,10 @@ namespace Lisa.Breakpoint.Api
 
             if (membership == null)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
 
-            return new HttpOkObjectResult(membership);
+            return new OkObjectResult(membership);
         }
 
         [HttpPost]
@@ -62,9 +62,9 @@ namespace Lisa.Breakpoint.Api
 
             if (!membership)
             {
-                return new HttpNotFoundResult();
+                return new NotFoundResult();
             }
-            return new HttpStatusCodeResult(204);
+            return new StatusCodeResult(204);
         }
 
         private Database _db;
