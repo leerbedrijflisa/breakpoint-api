@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
-using Newtonsoft.Json.Serialization;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Serialization;
 
 namespace Lisa.Breakpoint.Api
 {
@@ -22,6 +22,10 @@ namespace Lisa.Breakpoint.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+
+            services.AddApplicationInsightsTelemetry(Configuration);
+
             services.Configure<TableStorageSettings>(Configuration.GetSection("TableStorage"));
 
             services.AddMvc().AddJsonOptions(opts =>

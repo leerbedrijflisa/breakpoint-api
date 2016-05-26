@@ -5,7 +5,7 @@
   },
 
   "dependencies": {
-    "Lisa.Common.WebApi": "3.2.0",
+    "Lisa.Common.WebApi": "3.3.0-alpha-1",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0-rc2-final",
     "WindowsAzure.Storage": "7.0.1-preview",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0-rc2-final",
@@ -20,7 +20,8 @@
       "type": "platform"
     },
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc2-final",
-    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0-rc2-final"
+    "Microsoft.ApplicationInsights.AspNetCore": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-rc2-final"
   },
 
   "tools": {

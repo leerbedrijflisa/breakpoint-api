@@ -1,6 +1,6 @@
 ﻿using Lisa.Common.TableStorage;
 using Lisa.Common.WebApi;
-using Microsoft.Extensions.OptionsModel;
+using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
