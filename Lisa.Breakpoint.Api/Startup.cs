@@ -26,7 +26,7 @@ namespace Lisa.Breakpoint.Api
 
             services.AddApplicationInsightsTelemetry(Configuration);
 
-            services.Configure<TableStorageSettings>(Configuration.GetSection("TableStorage"));
+            services.Configure<TableStorageSettings>(Configuration.GetSection("TableStorage")); 
 
             services.AddMvc().AddJsonOptions(opts =>
             {
