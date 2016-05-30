@@ -17,7 +17,7 @@ namespace Lisa.Breakpoint.Api
         public async Task<ActionResult> Get([FromQuery] string project)
         {
             var filter = new List<Tuple<string, string>>();
-            var users = new List<string>();
+            var users = new List<object>();
             if (project != null)
             {
                 filter.Add(Tuple.Create("project", project));
