@@ -85,50 +85,18 @@ namespace Lisa.Breakpoint.Api
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] DynamicModel report)
         {
-            dynamic dynamicReport = report;
-            dynamic goodReport = report;
-            string assigneeType = null;
-            if(dynamicReport.assignee != null)
-            {
-                if (!dynamicReport.assignee.Contains("userName") && !dynamicReport.assignee.Contains("group"))
-                {
-                    List<object> error = new List<object>();
-                    error.Add(new { error = 21475, field = "assignee", description = "The field 'assignee' does not contain a valid parameter, valid parameters are 'userName' or 'group" });    
-
-                    return new UnprocessableEntityObjectResult(error);
-                }
-                if (dynamicReport.assignee.Contains("userName"))
-                {
-                    assigneeType = "userName";
-                    goodReport.assignee = dynamicReport.assignee.userName;
-                }
-                else if (dynamicReport.assignee.Contains("group"))
-                {
-                    assigneeType = "group";
-                    goodReport.assignee = dynamicReport.assignee.group;
-                }
-            }
-            if(goodReport == null)
+            if(report == null)
             {
                 return new BadRequestResult();
             }
 
-            var validationResult = _validator.Validate(goodReport);
+            var validationResult = _validator.Validate(report);
             if (validationResult.HasErrors)
             {
                 return new UnprocessableEntityObjectResult(validationResult.Errors);
             }
             
-            dynamic result = await _db.SaveReport(goodReport);
-            if(goodReport.assignee != null)
-            {
-                result.assignee = $"{assigneeType}: " + result.assignee;
-            }
-            else
-            {
-                result.assignee = "";
-            }
-
+            dynamic result = await _db.SaveReport(report);
 
             string location = Url.RouteUrl("SingleReport", new { id = result.id }, Request.Scheme);
 
