@@ -18,6 +18,7 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.title = model.title;
             entity.project = model.project;
+            entity.description = model.description;
             entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
             entity.status = model.status;
 
@@ -50,6 +51,7 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.title = entity.title;
             model.project = entity.project;
+            model.description = entity.description;
             try
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
@@ -60,6 +62,8 @@ namespace Lisa.Breakpoint.Api
                 Console.WriteLine(E.StackTrace);
             }
 
+            model.description = entity.description;
+            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             model.status = entity.status;
             model.reported = entity.reported;
 
