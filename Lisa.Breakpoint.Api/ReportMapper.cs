@@ -18,7 +18,15 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.title = model.title;
             entity.project = model.project;
-            entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
+            if (model.assignee != null)
+            {
+                entity.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            }
+            else
+            {
+                entity.assignee = "";
+            }
+
             entity.status = model.status;
 
             dynamic metadata = model.GetMetadata();
@@ -50,7 +58,14 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.title = entity.title;
             model.project = entity.project;
-            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            if(entity.assignee != null)
+            {
+                model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            }
+            else
+            {
+                model.assignee = "";
+            }
             model.status = entity.status;
             model.reported = entity.reported;
 

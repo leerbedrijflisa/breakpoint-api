@@ -8,6 +8,8 @@ namespace Lisa.Breakpoint.Api
     {
         public static List<DynamicModel> Sort(IEnumerable<DynamicModel> reports, string sort, string order)
         {
+
+
             foreach (string sortableField in sortableFields)
             {
                 if (sort == sortableField)
@@ -40,7 +42,7 @@ namespace Lisa.Breakpoint.Api
             "status",
             "reported",
             "assignee",
-            "datetime"
+            "created"
         };
     }
 }
