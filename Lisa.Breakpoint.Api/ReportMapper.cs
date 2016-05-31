@@ -50,7 +50,16 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.title = entity.title;
             model.project = entity.project;
-            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            try
+            {
+                model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            }
+            catch(Exception E)
+            {
+                model.assignee = "";
+                Console.WriteLine(E.StackTrace);
+            }
+
             model.status = entity.status;
             model.reported = entity.reported;
 
