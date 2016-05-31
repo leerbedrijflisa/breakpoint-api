@@ -21,6 +21,7 @@ namespace Lisa.Breakpoint.Api
             Allow("status");
             Allow("assignee");
             Allow("description");
+            Allow("solvedCommit");
         }
     }
 }
