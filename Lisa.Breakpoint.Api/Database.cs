@@ -171,6 +171,21 @@ namespace Lisa.Breakpoint.Api
             return true;
         }
 
+        public async Task<DynamicModel> saveProject(DynamicModel project)
+        {
+            CloudTable table = await Connect("Project");
+
+            dynamic projectEntity = ProjectMapper.ToEntity(project);
+            projectEntity.PartitionKey = "project";
+            projectEntity.RowKey = projectEntity.Id.ToString();
+
+            var InsertOperation = TableOperation.Insert(projectEntity);
+            await table.ExecuteAsync(InsertOperation);
+            var result = ProjectMapper.ToModel(projectEntity);
+
+            return result;
+        }
+
         private async Task<CloudTable> Connect(string tableName)
         {
             var account = CloudStorageAccount.Parse(_settings.ConnectionString);
