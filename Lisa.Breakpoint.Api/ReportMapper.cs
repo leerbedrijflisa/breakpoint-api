@@ -20,7 +20,8 @@ namespace Lisa.Breakpoint.Api
             entity.project = model.project;
             entity.description = model.description;
             entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
-            entity.status = model.status;            
+            entity.status = model.status;
+            entity.priority = model.priority;            
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -54,7 +55,6 @@ namespace Lisa.Breakpoint.Api
             model.title = entity.title;
             model.project = entity.project;
             model.description = entity.description;
-            model.solvedCommit = entity.solvedCommit;
             try
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
@@ -67,6 +67,8 @@ namespace Lisa.Breakpoint.Api
 
             model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             model.status = entity.status;
+            model.priority = entity.priority;
+            model.solvedCommit = entity.solvedCommit;
             model.reported = entity.reported;
 
             var metadata = new
