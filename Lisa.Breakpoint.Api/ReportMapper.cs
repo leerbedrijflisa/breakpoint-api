@@ -19,6 +19,13 @@ namespace Lisa.Breakpoint.Api
             entity.title = model.title;
             entity.project = model.project;
             entity.description = model.description;
+            string platfromString = "";
+            foreach (string platform in model.platform)
+            {
+                platfromString = platfromString + platform + ",";
+            }
+            platfromString = platfromString.Remove(platfromString.Length - 1);
+            entity.platform = platfromString;
             entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
             entity.status = model.status;
             entity.priority = model.priority;            
@@ -55,6 +62,14 @@ namespace Lisa.Breakpoint.Api
             model.title = entity.title;
             model.project = entity.project;
             model.description = entity.description;
+            if (entity.platform != null)
+            {
+                model.platform = entity.platform.Split(',');
+            }
+            else
+            {
+                model.platform = "";
+            }
             try
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
