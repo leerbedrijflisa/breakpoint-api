@@ -1,6 +1,7 @@
 ﻿using Lisa.Common.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lisa.Breakpoint.Api
@@ -14,9 +15,16 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public async Task<ActionResult> Get([FromQuery] string status)
         {
-            var projects = await _db.FetchProjects();
+            List<Tuple<string, string>> filter = new List<Tuple<string, string>>();
+
+            if (status != null)
+            {
+                filter.Add(Tuple.Create("status", status));
+            }
+
+            var projects = await _db.FetchProjects(filter);
             return new OkObjectResult(projects);
         }
 

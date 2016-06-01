@@ -208,12 +208,18 @@ namespace Lisa.Breakpoint.Api
             await table.ExecuteAsync(updateOperation);
         }
 
-        public async Task<IEnumerable<DynamicModel>> FetchProjects()
+        public async Task<IEnumerable<DynamicModel>> FetchProjects(List<Tuple<string, string>> filter)
         {
             CloudTable table = await Connect("Projects");
 
             var query = new TableQuery<DynamicEntity>();
-   
+
+            if (filter.Count > 0)
+            {
+                var filterCondition = CreateFilter(filter);
+                query = query.Where(filterCondition);
+            }
+
             var projects = await table.ExecuteQuerySegmentedAsync(query, null);
             var results = projects.Select(r => ProjectMapper.ToModel(r));
 
