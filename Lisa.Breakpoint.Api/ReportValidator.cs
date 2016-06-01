@@ -9,9 +9,11 @@ namespace Lisa.Breakpoint.Api
             Ignore("id");
             Required("title", NotEmpty, TypeOf(DataTypes.String));
             Required("project", NotEmpty, TypeOf(DataTypes.String));
+            Required("description", NotEmpty, TypeOf(DataTypes.String));
             Optional("assignee.userName", NotEmpty, TypeOf(DataTypes.String));
             Optional("assignee.group", NotEmpty, TypeOf(DataTypes.String));
             Optional("status", NotEmpty, OneOf(ValidationOptions.CaseSensitive, "open", "fixed", "closed", "wontFix", "wontFixApproved"));
+            Optional("priority", NotEmpty, OneOf(ValidationOptions.CaseSensitive, "fixImmediately", "fixBeforeRelease", "fixNextRelease", "fixWhenever"));
             Ignore("reported");
         }
 
@@ -19,6 +21,9 @@ namespace Lisa.Breakpoint.Api
         {
             Allow("status");
             Allow("assignee");
+            Allow("description");
+            Allow("priority");
+            Allow("solvedCommit");
         }
     }
 }

@@ -18,8 +18,10 @@ namespace Lisa.Breakpoint.Api
             dynamic entity = new DynamicEntity();
             entity.title = model.title;
             entity.project = model.project;
+            entity.description = model.description;
             entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
             entity.status = model.status;
+            entity.priority = model.priority;            
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -27,6 +29,7 @@ namespace Lisa.Breakpoint.Api
                 entity.id = Guid.NewGuid();
                 entity.reported = DateTime.UtcNow;
                 entity.status = "open";
+                entity.solvedCommit = "";
             }
             else
             {
@@ -34,6 +37,7 @@ namespace Lisa.Breakpoint.Api
                 entity.reported = model.reported;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
+                entity.solvedCommit = model.solvedCommit;
             }
 
             return entity;
@@ -50,6 +54,7 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.title = entity.title;
             model.project = entity.project;
+            model.description = entity.description;
             try
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
@@ -60,7 +65,10 @@ namespace Lisa.Breakpoint.Api
                 Console.WriteLine(E.StackTrace);
             }
 
+            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             model.status = entity.status;
+            model.priority = entity.priority;
+            model.solvedCommit = entity.solvedCommit;
             model.reported = entity.reported;
 
             var metadata = new
