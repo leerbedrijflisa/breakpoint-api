@@ -58,12 +58,56 @@ namespace Lisa.Breakpoint.Api
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMembership(Guid id)
         {
-            var membership = await _db.DeleteMembership(id);
+            var userName = "thebaws";
+            var loggedRole = "unknown";
 
-            if (!membership)
+            dynamic membership = await _db.FetchMembership(id);
+            if (membership == null)
             {
                 return new NotFoundResult();
             }
+
+            dynamic memberships = await _db.FetchMemberships(membership.project);
+
+            foreach (var member in memberships)
+            {
+                if(member.userName == userName)
+                {
+                    loggedRole = member.role;
+                }
+            }
+
+            if (!((loggedRole == "manager") ||
+                (loggedRole == "developer" && (membership.role == "tester" || userName == membership.userName)) ||
+                (loggedRole == "tester" && userName == membership.userName)))
+            {
+                var error = MemberShipValidator.UnauthorizedAction(membership);
+
+                return new UnprocessableEntityObjectResult(error);
+            }
+
+            if (membership.role == "manager")
+            {
+                int roleCount = 0;
+
+                foreach (var e in memberships)
+                {
+                    if (e.role == "manager")
+                    {
+                        roleCount += 1;
+                    }
+                }
+
+                if (roleCount == 1)
+                {
+                    var error = MemberShipValidator.InsufficiantManagers(membership);
+
+                    return new UnprocessableEntityObjectResult(error);
+                }
+            }
+
+            var deletedMembership = await _db.DeleteMembership(id);
+            
             return new StatusCodeResult(204);
         }
 

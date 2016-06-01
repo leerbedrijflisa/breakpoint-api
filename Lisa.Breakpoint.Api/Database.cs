@@ -71,6 +71,17 @@ namespace Lisa.Breakpoint.Api
             return sortedComments;
         }
 
+        public async Task<DynamicModel> FetchMembership(Guid id)
+        {
+            CloudTable table = await Connect("Memberships");
+
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
+            var report = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = report.Select(r => MemberShipMapper.ToModel(r)).SingleOrDefault();
+
+            return result;
+        }
+
         public async Task<IEnumerable<DynamicModel>> FetchMemberships(string projectName)
         {
             CloudTable table = await Connect("Memberships");
