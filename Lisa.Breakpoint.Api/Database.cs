@@ -171,19 +171,53 @@ namespace Lisa.Breakpoint.Api
             return true;
         }
 
-        public async Task<DynamicModel> saveProject(DynamicModel project)
+        public async Task<DynamicModel> SaveProject(DynamicModel project)
         {
-            CloudTable table = await Connect("Project");
+            CloudTable table = await Connect("Projects");
 
             dynamic projectEntity = ProjectMapper.ToEntity(project);
             projectEntity.PartitionKey = "project";
-            projectEntity.RowKey = projectEntity.Id.ToString();
+            projectEntity.RowKey = projectEntity.id.ToString();
 
             var InsertOperation = TableOperation.Insert(projectEntity);
             await table.ExecuteAsync(InsertOperation);
             var result = ProjectMapper.ToModel(projectEntity);
 
             return result;
+        }
+
+        public async Task<DynamicModel> FetchProject(Guid id)
+        {
+            CloudTable table = await Connect("Projects");
+
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
+            var report = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = report.Select(r => ProjectMapper.ToModel(r)).SingleOrDefault();
+
+            return result;
+        }
+
+        public async Task UpdateProject(dynamic project)
+        {
+            CloudTable table = await Connect("Projects");
+
+            dynamic projectEntity = ProjectMapper.ToEntity(project);
+
+            var updateOperation = TableOperation.InsertOrReplace(projectEntity);
+
+            await table.ExecuteAsync(updateOperation);
+        }
+
+        public async Task<IEnumerable<DynamicModel>> FetchProjects()
+        {
+            CloudTable table = await Connect("Projects");
+
+            var query = new TableQuery<DynamicEntity>();
+   
+            var projects = await table.ExecuteQuerySegmentedAsync(query, null);
+            var results = projects.Select(r => ProjectMapper.ToModel(r));
+
+            return results;
         }
 
         private async Task<CloudTable> Connect(string tableName)
