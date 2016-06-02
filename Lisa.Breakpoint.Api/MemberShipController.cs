@@ -16,6 +16,7 @@ namespace Lisa.Breakpoint.Api
         [HttpGet("{projectName}", Name = "SingleMembership")]
         public async Task<ActionResult> Get(string projectName)
         {
+            projectName = projectName.Replace("%20", "");
             dynamic membership = await _db.FetchMemberships(projectName);
 
             if (membership == null)
