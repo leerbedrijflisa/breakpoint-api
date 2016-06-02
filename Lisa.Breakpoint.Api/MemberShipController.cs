@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace Lisa.Breakpoint.Api
 {
     [Route("/memberships/")]
-    public class MemberShipController : Controller
+    public class MembershipController : Controller
     {
-        public MemberShipController(Database database)
+        public MembershipController(Database database)
         {
             _db = database;
         }
@@ -43,7 +43,7 @@ namespace Lisa.Breakpoint.Api
             var membershipCheck = await _db.CheckMembership(membership);
             if (membershipCheck == null)
             {
-                var error = MemberShipValidator.MembershipError(membership);
+                var error = MembershipValidator.MembershipError(membership);
 
                 return new UnprocessableEntityObjectResult(error);
             }
@@ -68,6 +68,6 @@ namespace Lisa.Breakpoint.Api
         }
 
         private Database _db;
-        private Validator _validator = new MemberShipValidator();
+        private Validator _validator = new MembershipValidator();
     }
 }

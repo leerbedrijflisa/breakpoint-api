@@ -2,7 +2,7 @@
 
 namespace Lisa.Breakpoint.Api
 {
-    public class MemberShipValidator : Validator
+    public class MembershipValidator : Validator
     {
         public static object MembershipError(DynamicModel membership)
         {

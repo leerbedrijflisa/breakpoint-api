@@ -26,7 +26,16 @@ namespace Lisa.Breakpoint.Api
             }
             platfromString = platfromString.Remove(platfromString.Length - 1);
             entity.platform = platfromString;
-            entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
+
+            if (model.assignee != null)
+            {
+                entity.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            }
+            else
+            {
+                entity.assignee = "";
+            }
+            
             entity.status = model.status;
             entity.priority = model.priority;            
 
@@ -70,17 +79,16 @@ namespace Lisa.Breakpoint.Api
             {
                 model.platform = "";
             }
-            try
+
+            if(entity.assignee != null)
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             }
-            catch(Exception E)
+            else
             {
                 model.assignee = "";
-                Console.WriteLine(E.StackTrace);
             }
 
-            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             model.status = entity.status;
             model.priority = entity.priority;
             model.solvedCommit = entity.solvedCommit;
