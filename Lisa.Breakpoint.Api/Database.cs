@@ -35,18 +35,6 @@ namespace Lisa.Breakpoint.Api
             return results;
         }
 
-        public async Task<IEnumerable<DynamicModel>> FetchAllMemberships()
-        {
-            CloudTable table = await Connect("Memberships");
-
-            var query = new TableQuery<DynamicEntity>();
-            var reports = await table.ExecuteQuerySegmentedAsync(query, null);
-            var results = reports.Select(r => MemberShipMapper.ToModel(r));
-
-            return results;
-        }
-
-
         public async Task<DynamicModel> FetchReport(Guid id)
         {
             CloudTable table = await Connect("Reports");
@@ -83,18 +71,18 @@ namespace Lisa.Breakpoint.Api
             return sortedComments;
         }
 
-        public async Task<DynamicModel> FetchMembership(Guid id)
+        public async Task<IEnumerable<DynamicModel>> FetchMemberships()
         {
             CloudTable table = await Connect("Memberships");
 
-            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
-            var report = await table.ExecuteQuerySegmentedAsync(query, null);
-            var result = report.Select(r => MemberShipMapper.ToModel(r)).SingleOrDefault();
+            var query = new TableQuery<DynamicEntity>();
+            var reports = await table.ExecuteQuerySegmentedAsync(query, null);
+            var results = reports.Select(r => MembershipMapper.ToModel(r));
 
-            return result;
+            return results;
         }
 
-        public async Task<IEnumerable<DynamicModel>> FetchMemberships(string projectName)
+        public async Task<IEnumerable<DynamicModel>> FetchMembershipsByProject(string projectName)
         {
             CloudTable table = await Connect("Memberships");
 
@@ -295,7 +283,7 @@ namespace Lisa.Breakpoint.Api
 
             membershipModel.userName = membershipModel.userName.ToString().ToLower();
 
-            IEnumerable<DynamicModel> membershipEntity = await FetchMemberships(membershipModel.project);
+            IEnumerable<DynamicModel> membershipEntity = await FetchMembershipsByProject(membershipModel.project);
 
             foreach (dynamic memberships in membershipEntity)
             {

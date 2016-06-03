@@ -16,7 +16,7 @@ namespace Lisa.Breakpoint.Api
         [HttpGet("{projectName}", Name = "SingleMembership")]
         public async Task<ActionResult> Get(string projectName)
         {
-            dynamic membership = await _db.FetchMemberships(projectName);
+            dynamic membership = await _db.FetchMembershipsByProject(projectName);
 
             if (membership == null)
             {
@@ -59,17 +59,16 @@ namespace Lisa.Breakpoint.Api
         public async Task<ActionResult> DeleteMembership(Guid id)
         {
             string userName = "supertheo";
-            string userRole = null;
-            string deletedName = null;
-            string deletedRole = null;
-            string project = null;
-            int managerCount = 0;
 
-            dynamic memberships = await _db.FetchAllMemberships();
+            dynamic memberships = await _db.FetchMemberships();
             if (memberships == null)
             {
                 return new NotFoundResult();
             }
+
+            string deletedName = null;
+            string deletedRole = null;
+            string project = null;
 
             foreach (var membership in memberships)
             {
@@ -85,6 +84,8 @@ namespace Lisa.Breakpoint.Api
             {
                 return new NotFoundResult();
             }
+
+            string userRole = null;
 
             foreach (var membership in memberships)
             {
@@ -103,6 +104,8 @@ namespace Lisa.Breakpoint.Api
 
             if (deletedRole == "manager")
             {
+                int managerCount = 0;
+
                 foreach (var membership in memberships)
                 {
                     if (membership.project == project && membership.role == "manager")
