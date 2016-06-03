@@ -58,12 +58,67 @@ namespace Lisa.Breakpoint.Api
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMembership(Guid id)
         {
-            var membership = await _db.DeleteMembership(id);
+            string userName = "supertheo";
+            string userRole = null;
+            string deletedName = null;
+            string deletedRole = null;
+            string project = null;
+            int managerCount = 0;
 
-            if (!membership)
+            dynamic memberships = await _db.FetchAllMemberships();
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
+
+            foreach (var membership in memberships)
+            {
+                if (membership.id == id)
+                {
+                    deletedName = membership.userName;
+                    deletedRole = membership.role;
+                    project = membership.project;
+                }
+            }
+
+            if (deletedRole == null)
+            {
+                return new NotFoundResult();
+            }
+
+            foreach (var membership in memberships)
+            {
+                if (membership.userName == userName)
+                {
+                    userRole = membership.role;
+                }
+            }
+
+            if (!((userRole == "manager") ||
+                (userRole == "developer" && (deletedRole == "tester" || userName == deletedName)) ||
+                (userRole == "tester" && userName == deletedName)))
+            {
+                return new StatusCodeResult(401);
+            }
+
+            if (deletedRole == "manager")
+            {
+                foreach (var membership in memberships)
+                {
+                    if (membership.project == project && membership.role == "manager")
+                    {
+                        managerCount += 1;
+                    }
+                }
+
+                if (managerCount == 1)
+                {
+                    return new StatusCodeResult(401);
+                }
+            }
+
+            await _db.DeleteMembership(id);
+            
             return new StatusCodeResult(204);
         }
 
