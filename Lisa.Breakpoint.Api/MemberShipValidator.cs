@@ -28,29 +28,5 @@ namespace Lisa.Breakpoint.Api
 
             return error;
         }
-
-        public static object InsufficiantManagers(DynamicModel membership)
-        {
-            var error = new Error
-            {
-                Code = ErrorCode.EmptyValue,
-                Message = $"There's has to be atleast one manager.",
-                Values = membership
-            };
-
-            return error;
-        }
-
-        public static object UnauthorizedAction(DynamicModel membership)
-        {
-            var error = new Error
-            {
-                Code = ErrorCode.EmptyValue,
-                Message = $"The user is not authorized to delete this member.",
-                Values = membership
-            };
-
-            return error;
-        }
     }
 }

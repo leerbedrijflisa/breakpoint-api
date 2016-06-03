@@ -58,55 +58,66 @@ namespace Lisa.Breakpoint.Api
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMembership(Guid id)
         {
-            var userName = "thebaws";
-            var loggedRole = "unknown";
+            string userName = "supertheo";
+            string userRole = null;
+            string deletedName = null;
+            string deletedRole = null;
+            string project = null;
+            int managerCount = 0;
 
-            dynamic membership = await _db.FetchMembership(id);
-            if (membership == null)
+            dynamic memberships = await _db.FetchAllMemberships();
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
 
-            dynamic memberships = await _db.FetchMemberships(membership.project);
-
-            foreach (var member in memberships)
+            foreach (var membership in memberships)
             {
-                if(member.userName == userName)
+                if (membership.id == id)
                 {
-                    loggedRole = member.role;
+                    deletedName = membership.userName;
+                    deletedRole = membership.role;
+                    project = membership.project;
                 }
             }
 
-            if (!((loggedRole == "manager") ||
-                (loggedRole == "developer" && (membership.role == "tester" || userName == membership.userName)) ||
-                (loggedRole == "tester" && userName == membership.userName)))
+            if (deletedRole == null)
             {
-                var error = MemberShipValidator.UnauthorizedAction(membership);
-
-                return new UnprocessableEntityObjectResult(error);
+                return new NotFoundResult();
             }
 
-            if (membership.role == "manager")
+            foreach (var membership in memberships)
             {
-                int roleCount = 0;
-
-                foreach (var e in memberships)
+                if (membership.userName == userName)
                 {
-                    if (e.role == "manager")
+                    userRole = membership.role;
+                }
+            }
+
+            if (!((userRole == "manager") ||
+                (userRole == "developer" && (deletedRole == "tester" || userName == deletedName)) ||
+                (userRole == "tester" && userName == deletedName)))
+            {
+                return new StatusCodeResult(401);
+            }
+
+            if (deletedRole == "manager")
+            {
+                foreach (var membership in memberships)
+                {
+                    if (membership.project == project && membership.role == "manager")
                     {
-                        roleCount += 1;
+                        managerCount += 1;
                     }
                 }
 
-                if (roleCount == 1)
+                if (managerCount == 1)
                 {
-                    var error = MemberShipValidator.InsufficiantManagers(membership);
-
-                    return new UnprocessableEntityObjectResult(error);
+                    return new StatusCodeResult(401);
                 }
             }
 
-            var deletedMembership = await _db.DeleteMembership(id);
+            await _db.DeleteMembership(id);
             
             return new StatusCodeResult(204);
         }
