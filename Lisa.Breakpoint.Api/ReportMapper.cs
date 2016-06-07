@@ -20,11 +20,14 @@ namespace Lisa.Breakpoint.Api
             entity.project = model.project;
             entity.description = model.description;
             string platfromString = "";
-            foreach (string platform in model.platform)
+            if (model.platform != null)
             {
-                platfromString = platfromString + platform + ",";
-            }
-            platfromString = platfromString.Remove(platfromString.Length - 1);
+                foreach (string platform in model.platform)
+                {
+                    platfromString = platfromString + platform + ",";
+                }
+                platfromString = platfromString.Remove(platfromString.Length - 1);
+            }           
             entity.platform = platfromString;
             entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
             entity.status = model.status;
