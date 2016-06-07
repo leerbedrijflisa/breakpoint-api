@@ -2,20 +2,8 @@
 
 namespace Lisa.Breakpoint.Api
 {
-    public class MemberShipValidator : Validator
+    public class MembershipValidator : Validator
     {
-        public static object MembershipError(DynamicModel membership)
-        {
-            var error = new Error
-            {
-                Code = ErrorCode.EmptyValue,
-                Message = $"The given membership already exist.",
-                Values = membership
-            };
-
-            return error;
-        }
-
         protected override void ValidateModel()
         {
             Ignore("id");
@@ -27,6 +15,18 @@ namespace Lisa.Breakpoint.Api
         protected override void ValidatePatch()
         {
 
+        }
+        
+        public static object MembershipError(DynamicModel membership)
+        {
+            var error = new Error
+            {
+                Code = ErrorCode.EmptyValue,
+                Message = $"The given membership already exist.",
+                Values = membership
+            };
+
+            return error;
         }
     }
 }

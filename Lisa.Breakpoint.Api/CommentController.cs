@@ -64,7 +64,7 @@ namespace Lisa.Breakpoint.Api
 
             for (int i = 0; i < patches.Length; i++)
             {
-                if (patches[i].Field == "deleted")
+                if (patches[i].Field == "status")
                 {
                     int newIndex = patches.Length;
 
@@ -72,16 +72,8 @@ namespace Lisa.Breakpoint.Api
                     patches[newIndex] = new Patch();
 
                     patches[newIndex].Action = "replace";
-                    patches[newIndex].Field = "deletionDate";
-
-                    if (Convert.ToBoolean(patches[i].Value))
-                    {
-                        patches[newIndex].Value = DateTime.UtcNow;
-                    }
-                    else
-                    {
-                        patches[newIndex].Value = "";
-                    }
+                    patches[newIndex].Field = "statusChanged";
+                    patches[newIndex].Value = DateTime.UtcNow;
                 }
             }
 

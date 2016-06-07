@@ -22,18 +22,18 @@ namespace Lisa.Breakpoint.Api
             if (metadata == null)
             {
                 entity.id = Guid.NewGuid();
-                entity.datetime = DateTime.UtcNow;
-                entity.deleted = false;
-                entity.deletionDate = "";
+                entity.created = DateTime.UtcNow;
+                entity.status = "open";
+                entity.statusChanged = "";
             }
             else
             {
                 entity.id = model.id;
-                entity.datetime = model.datetime;
-                entity.deleted = model.deleted;
+                entity.created = model.created;
+                entity.status = model.status;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
-                entity.deletionDate = model.deletionDate;
+                entity.statusChanged = model.statusChanged;
             }
 
             return entity;
@@ -50,9 +50,9 @@ namespace Lisa.Breakpoint.Api
             model.id = entity.id;
             model.userName = entity.userName;
             model.comment = entity.comment;
-            model.datetime = entity.datetime;
-            model.deleted = entity.deleted;
-            model.deletionDate = entity.deletionDate;
+            model.created = entity.created;
+            model.status = entity.status;
+            model.statusChanged = entity.statusChanged;
 
             var metadata = new
             {

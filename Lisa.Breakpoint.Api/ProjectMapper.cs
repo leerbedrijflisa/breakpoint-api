@@ -15,30 +15,43 @@ namespace Lisa.Breakpoint.Api
 
             dynamic entity = new DynamicEntity();
 
-            entity.Id = Guid.NewGuid();
-            entity.Name = model.name;
-            entity.CreatedBy = model.createdBy;
-            if (model.status != null)
-            {
-                entity.Status = model.status;
-            }
-            else
-            {
-                entity.Status = "open";
-            }
-            entity.Created = DateTime.UtcNow;
+            entity.name = model.name;
+            entity.createdBy = model.createdBy;
 
             if (model.platform != null)
             {
-                string platformList = "";
-
-                foreach (string platform in model.platforms)
+                if (model.platform.GetType() == typeof(Array))
                 {
-                    platformList = platformList + platform + ",";
-                }
-                platformList = platformList.Remove(platformList.Length - 1);
+                    string platformList = "";
 
-                entity.Platform = platformList;
+                    foreach (string platform in model.platforms)
+                    {
+                        platformList = platformList + platform + ",";
+                    }
+                    platformList = platformList.Remove(platformList.Length - 1);
+
+                    entity.platform = platformList;
+                }
+            }
+            else
+            {
+                entity.platform = "";
+            }
+
+            dynamic metadata = model.GetMetadata();
+            if (metadata == null)
+            {
+                entity.id = Guid.NewGuid();
+                entity.created = DateTime.UtcNow;
+                entity.status = "open";
+            }
+            else
+            {
+                entity.id = model.id;
+                entity.created = model.created;
+                entity.PartitionKey = metadata.PartitionKey;
+                entity.RowKey = metadata.RowKey;
+                entity.status = model.status;
             }
 
             return entity;
@@ -53,19 +66,19 @@ namespace Lisa.Breakpoint.Api
 
             dynamic model = new DynamicModel();
 
-            model.id = entity.Id;
-            model.name = entity.Name;
-            model.status = entity.Status;
-            model.createdBy = entity.CreatedBy;
-            if (entity.Platform != null)
+            model.id = entity.id;
+            model.name = entity.name;
+            model.status = entity.status;
+            model.createdBy = entity.createdBy;
+            if (entity.platform != null)
             {
-                model.platform = entity.Platform.Split(',');
+                model.platform = entity.platform.Split(',');
             }
             else
             {
                 model.platform = "";
             }
-            model.created = entity.Created;
+            model.created = entity.created;
 
             var metadata = new
             {

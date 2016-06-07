@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace Lisa.Breakpoint.Api
 {
     [Route("/memberships/")]
-    public class MemberShipController : Controller
+    public class MembershipController : Controller
     {
-        public MemberShipController(Database database)
+        public MembershipController(Database database)
         {
             _db = database;
         }
@@ -16,7 +16,7 @@ namespace Lisa.Breakpoint.Api
         [HttpGet("{projectName}", Name = "SingleMembership")]
         public async Task<ActionResult> Get(string projectName)
         {
-            dynamic membership = await _db.FetchMemberships(projectName);
+            dynamic membership = await _db.FetchMembershipsByProject(projectName);
 
             if (membership == null)
             {
@@ -43,7 +43,7 @@ namespace Lisa.Breakpoint.Api
             var membershipCheck = await _db.CheckMembership(membership);
             if (membershipCheck == null)
             {
-                var error = MemberShipValidator.MembershipError(membership);
+                var error = MembershipValidator.MembershipError(membership);
 
                 return new UnprocessableEntityObjectResult(error);
             }
@@ -58,16 +58,74 @@ namespace Lisa.Breakpoint.Api
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMembership(Guid id)
         {
-            var membership = await _db.DeleteMembership(id);
+            string userName = "supertheo";
 
-            if (!membership)
+            dynamic memberships = await _db.FetchMemberships();
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
+
+            string deletedName = null;
+            string deletedRole = null;
+            string project = null;
+
+            foreach (var membership in memberships)
+            {
+                if (membership.id == id)
+                {
+                    deletedName = membership.userName;
+                    deletedRole = membership.role;
+                    project = membership.project;
+                }
+            }
+
+            if (deletedRole == null)
+            {
+                return new NotFoundResult();
+            }
+
+            string userRole = null;
+
+            foreach (var membership in memberships)
+            {
+                if (membership.userName == userName)
+                {
+                    userRole = membership.role;
+                }
+            }
+
+            if (!((userRole == "manager") ||
+                (userRole == "developer" && (deletedRole == "tester" || userName == deletedName)) ||
+                (userRole == "tester" && userName == deletedName)))
+            {
+                return new StatusCodeResult(401);
+            }
+
+            if (deletedRole == "manager")
+            {
+                int managerCount = 0;
+
+                foreach (var membership in memberships)
+                {
+                    if (membership.project == project && membership.role == "manager")
+                    {
+                        managerCount += 1;
+                    }
+                }
+
+                if (managerCount == 1)
+                {
+                    return new StatusCodeResult(401);
+                }
+            }
+
+            await _db.DeleteMembership(id);
+            
             return new StatusCodeResult(204);
         }
 
         private Database _db;
-        private Validator _validator = new MemberShipValidator();
+        private Validator _validator = new MembershipValidator();
     }
 }

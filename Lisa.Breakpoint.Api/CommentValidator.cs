@@ -7,17 +7,17 @@ namespace Lisa.Breakpoint.Api
         protected override void ValidateModel()
         {
             Ignore("id");
-            Ignore("datetime");
-            Ignore("deletionDate");
+            Ignore("created");
+            Ignore("statusChanged");
             Required("userName", NotEmpty, TypeOf(DataTypes.String));
             Required("comment", NotEmpty, TypeOf(DataTypes.String));
-            Optional("deleted", TypeOf(DataTypes.Boolean));
+            Optional("status", NotEmpty, OneOf(ValidationOptions.CaseSensitive, "open", "archived"));
         }
 
         protected override void ValidatePatch()
         {
             Allow("comment");
-            Allow("deleted");
+            Allow("status");
         }
     }
 }
