@@ -31,12 +31,21 @@ namespace Lisa.Breakpoint.Api
                    
             entity.platform = platfromString;
 
-            if (model.assignee.ToString() != null) {
-                entity.assignee = JsonConvert.SerializeObject(model.assignee);
+            try
+            {
+                if (model.assignee.ToString() != null)
+                {
+                    entity.assignee = JsonConvert.SerializeObject(model.assignee);
+                }
+                else
+                {
+                    entity.assignee = model.assignee;
+                }
             }
-            else
+            catch (Exception E)
             {
                 entity.assignee = model.assignee;
+                Console.WriteLine(E.StackTrace);
             }
 
             entity.priority = model.priority;            
