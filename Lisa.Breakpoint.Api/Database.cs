@@ -142,6 +142,22 @@ namespace Lisa.Breakpoint.Api
             return result;
         }
 
+        public async Task<DynamicModel> SaveRelease(dynamic release)
+        {
+            CloudTable table = await Connect("Releases");
+
+            dynamic releaseEntity = ReleaseMapper.ToEntity(release);
+
+            releaseEntity.PartitionKey = releaseEntity.version.ToString();
+            releaseEntity.RowKey = releaseEntity.id.ToString();
+
+            var InsertOperation = TableOperation.Insert(releaseEntity);
+            await table.ExecuteAsync(InsertOperation);
+            var result = ReleaseMapper.ToModel(releaseEntity);
+
+            return result;
+        }
+
         public async Task UpdateReport(DynamicModel report)
         {
             CloudTable table = await Connect("Reports");
