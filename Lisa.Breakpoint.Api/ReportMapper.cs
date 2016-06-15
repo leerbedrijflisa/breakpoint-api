@@ -27,19 +27,18 @@ namespace Lisa.Breakpoint.Api
                     platfromString = platfromString + platform + ",";
                 }
                 platfromString = platfromString.Remove(platfromString.Length - 1);
-            }           
+            }    
+                   
             entity.platform = platfromString;
 
-            if (model.assignee != null)
-            {
-                entity.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            if (model.assignee.ToString() != null) {
+                entity.assignee = JsonConvert.SerializeObject(model.assignee);
             }
             else
             {
-                entity.assignee = "";
+                entity.assignee = model.assignee;
             }
-            
-            entity.status = model.status;
+
             entity.priority = model.priority;            
 
             dynamic metadata = model.GetMetadata();
@@ -56,6 +55,7 @@ namespace Lisa.Breakpoint.Api
                 entity.reported = model.reported;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
+                entity.status = model.status;
                 entity.solvedCommit = model.solvedCommit;
             }
 
@@ -83,7 +83,7 @@ namespace Lisa.Breakpoint.Api
                 model.platform = "";
             }
 
-            if (entity.assignee != string.Empty)
+            if (entity.assignee != null)
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             }
@@ -93,7 +93,16 @@ namespace Lisa.Breakpoint.Api
             }
 
             model.status = entity.status;
-            model.priority = entity.priority;
+
+            if (entity.priority != null)
+            {
+                model.priority = entity.priority;
+            }
+            else
+            {
+                model.priority = "";
+            }
+            
             model.solvedCommit = entity.solvedCommit;
             model.reported = entity.reported;
 

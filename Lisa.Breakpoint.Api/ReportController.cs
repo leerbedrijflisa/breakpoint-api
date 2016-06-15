@@ -99,7 +99,6 @@ namespace Lisa.Breakpoint.Api
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch([FromBody] Patch[] patches, Guid id)
         {
-        
             if (patches == null)
             {
                 return new BadRequestResult();
