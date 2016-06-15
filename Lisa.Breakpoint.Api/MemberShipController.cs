@@ -1,6 +1,7 @@
 ﻿using Lisa.Common.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lisa.Breakpoint.Api
@@ -13,17 +14,32 @@ namespace Lisa.Breakpoint.Api
             _db = database;
         }
 
-        [HttpGet("{projectName}", Name = "SingleMembership")]
-        public async Task<ActionResult> Get(string projectName)
+        [HttpGet]
+        public async Task<ActionResult> Get([FromQuery] string project, [FromQuery] string role, [FromQuery] string userName)
         {
-            dynamic membership = await _db.FetchMembershipsByProject(projectName);
+            List<Tuple<string, string>> filter = new List<Tuple<string, string>>();
 
-            if (membership == null)
+            if (project != null)
+            {
+                filter.Add(Tuple.Create("project", project));
+            }
+            if (role != null)
+            {
+                filter.Add(Tuple.Create("role", role));
+            }
+            if (userName != null)
+            {
+                filter.Add(Tuple.Create("userName", userName));
+            }
+
+            dynamic memberships = await _db.FetchMemberships(filter);
+
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(membership);
+            return new OkObjectResult(memberships);
         }
 
         [HttpPost]
@@ -56,10 +72,8 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteMembership(Guid id)
+        public async Task<ActionResult> DeleteMembership([FromQuery] string userName, Guid id)
         {
-            string userName = "supertheo";
-
             dynamic memberships = await _db.FetchMemberships();
             if (memberships == null)
             {

@@ -83,7 +83,7 @@ namespace Lisa.Breakpoint.Api
                 model.platform = "";
             }
 
-            if(entity.assignee != null)
+            if (entity.assignee != string.Empty)
             {
                 model.assignee = JsonConvert.DeserializeObject(entity.assignee);
             }
