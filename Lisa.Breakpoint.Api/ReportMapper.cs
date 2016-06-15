@@ -19,8 +19,27 @@ namespace Lisa.Breakpoint.Api
             entity.title = model.title;
             entity.project = model.project;
             entity.description = model.description;
-            entity.assignee = JsonConvert.SerializeObject(model.assignee ?? string.Empty);
-            entity.status = model.status;
+            string platfromString = "";
+            if (model.platform != null)
+            {
+                foreach (string platform in model.platform)
+                {
+                    platfromString = platfromString + platform + ",";
+                }
+                platfromString = platfromString.Remove(platfromString.Length - 1);
+            }    
+                   
+            entity.platform = platfromString;
+
+            if (model.assignee.ToString() != null) {
+                entity.assignee = JsonConvert.SerializeObject(model.assignee);
+            }
+            else
+            {
+                entity.assignee = model.assignee;
+            }
+
+            entity.priority = model.priority;            
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -28,6 +47,7 @@ namespace Lisa.Breakpoint.Api
                 entity.id = Guid.NewGuid();
                 entity.reported = DateTime.UtcNow;
                 entity.status = "open";
+                entity.solvedCommit = "";
             }
             else
             {
@@ -35,6 +55,8 @@ namespace Lisa.Breakpoint.Api
                 entity.reported = model.reported;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
+                entity.status = model.status;
+                entity.solvedCommit = model.solvedCommit;
             }
 
             return entity;
@@ -52,8 +74,36 @@ namespace Lisa.Breakpoint.Api
             model.title = entity.title;
             model.project = entity.project;
             model.description = entity.description;
-            model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            if (entity.platform != null)
+            {
+                model.platform = entity.platform.Split(',');
+            }
+            else
+            {
+                model.platform = "";
+            }
+
+            if (entity.assignee != null)
+            {
+                model.assignee = JsonConvert.DeserializeObject(entity.assignee);
+            }
+            else
+            {
+                model.assignee = "";
+            }
+
             model.status = entity.status;
+
+            if (entity.priority != null)
+            {
+                model.priority = entity.priority;
+            }
+            else
+            {
+                model.priority = "";
+            }
+            
+            model.solvedCommit = entity.solvedCommit;
             model.reported = entity.reported;
 
             var metadata = new

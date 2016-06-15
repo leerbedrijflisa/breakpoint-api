@@ -40,7 +40,7 @@ namespace Lisa.Breakpoint.Api
             "status",
             "reported",
             "assignee",
-            "datetime"
+            "created"
         };
     }
 }

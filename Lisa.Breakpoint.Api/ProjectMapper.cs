@@ -1,13 +1,12 @@
 ﻿using Lisa.Common.TableStorage;
 using Lisa.Common.WebApi;
-using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 namespace Lisa.Breakpoint.Api
 {
-    public class CommentMapper
+    public class ProjectMapper
     {
-        public static ITableEntity ToEntity(dynamic model)
+        public static DynamicEntity ToEntity(dynamic model)
         {
             if (model == null)
             {
@@ -15,8 +14,29 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic entity = new DynamicEntity();
-            entity.userName = model.userName;
-            entity.comment = model.comment;
+
+            entity.name = model.name;
+            entity.createdBy = model.createdBy;
+
+            if (model.platform != null)
+            {
+                if (model.platform.GetType() == typeof(Array))
+                {
+                    string platformList = "";
+
+                    foreach (string platform in model.platforms)
+                    {
+                        platformList = platformList + platform + ",";
+                    }
+                    platformList = platformList.Remove(platformList.Length - 1);
+
+                    entity.platform = platformList;
+                }
+            }
+            else
+            {
+                entity.platform = "";
+            }
 
             dynamic metadata = model.GetMetadata();
             if (metadata == null)
@@ -24,16 +44,14 @@ namespace Lisa.Breakpoint.Api
                 entity.id = Guid.NewGuid();
                 entity.created = DateTime.UtcNow;
                 entity.status = "open";
-                entity.statusChanged = "";
             }
             else
             {
                 entity.id = model.id;
                 entity.created = model.created;
-                entity.status = model.status;
                 entity.PartitionKey = metadata.PartitionKey;
                 entity.RowKey = metadata.RowKey;
-                entity.statusChanged = model.statusChanged;
+                entity.status = model.status;
             }
 
             return entity;
@@ -47,12 +65,20 @@ namespace Lisa.Breakpoint.Api
             }
 
             dynamic model = new DynamicModel();
+
             model.id = entity.id;
-            model.userName = entity.userName;
-            model.comment = entity.comment;
-            model.created = entity.created;
+            model.name = entity.name;
             model.status = entity.status;
-            model.statusChanged = entity.statusChanged;
+            model.createdBy = entity.createdBy;
+            if (entity.platform != null)
+            {
+                model.platform = entity.platform.Split(',');
+            }
+            else
+            {
+                model.platform = "";
+            }
+            model.created = entity.created;
 
             var metadata = new
             {

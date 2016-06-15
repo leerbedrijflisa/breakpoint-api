@@ -70,14 +70,35 @@ namespace Lisa.Breakpoint.Api
 
             return sortedComments;
         }
+   
+        public async Task<IEnumerable<DynamicModel>> FetchMemberships(List<Tuple<string, string>> filter = null)
+        {
+            CloudTable table = await Connect("Memberships");
 
-        public async Task<IEnumerable<DynamicModel>> FetchMemberships(string projectName)
+            var query = new TableQuery<DynamicEntity>();
+
+            if (filter != null)
+            {
+                if (filter.Count > 0)
+                {
+                    var filterCondition = CreateFilter(filter);
+                    query = query.Where(filterCondition);
+                }
+            }
+
+            var reports = await table.ExecuteQuerySegmentedAsync(query, null);
+            var results = reports.Select(r => MembershipMapper.ToModel(r));
+
+            return results;
+        }
+
+        public async Task<IEnumerable<DynamicModel>> FetchMembershipsByProject(string projectName)
         {
             CloudTable table = await Connect("Memberships");
 
             var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterCondition("project", QueryComparisons.Equal, projectName));
             var membership = await table.ExecuteQuerySegmentedAsync(query, null);
-            var result = membership.Select(m => MemberShipMapper.ToModel(m));
+            var result = membership.Select(m => MembershipMapper.ToModel(m));
 
             return result;
         }
@@ -118,7 +139,7 @@ namespace Lisa.Breakpoint.Api
         {
             CloudTable table = await Connect("Memberships");
 
-            dynamic membershipEntity = MemberShipMapper.ToEntity(membership);
+            dynamic membershipEntity = MembershipMapper.ToEntity(membership);
 
             membershipEntity.userName = membershipEntity.userName.ToString().ToLower();
             membershipEntity.PartitionKey = membershipEntity.project;
@@ -126,7 +147,7 @@ namespace Lisa.Breakpoint.Api
 
             var InsertOperation = TableOperation.Insert(membershipEntity);
             await table.ExecuteAsync(InsertOperation);
-            var result = MemberShipMapper.ToModel(membershipEntity);
+            var result = MembershipMapper.ToModel(membershipEntity);
 
             return result;
         }
@@ -169,6 +190,61 @@ namespace Lisa.Breakpoint.Api
 
             await table.ExecuteAsync(deleteOperation);
             return true;
+        }
+
+        public async Task<DynamicModel> SaveProject(DynamicModel project)
+        {
+            CloudTable table = await Connect("Projects");
+
+            dynamic projectEntity = ProjectMapper.ToEntity(project);
+            projectEntity.PartitionKey = "project";
+            projectEntity.RowKey = projectEntity.id.ToString();
+
+            var InsertOperation = TableOperation.Insert(projectEntity);
+            await table.ExecuteAsync(InsertOperation);
+            var result = ProjectMapper.ToModel(projectEntity);
+
+            return result;
+        }
+
+        public async Task<DynamicModel> FetchProject(Guid id)
+        {
+            CloudTable table = await Connect("Projects");
+
+            var query = new TableQuery<DynamicEntity>().Where(TableQuery.GenerateFilterConditionForGuid("id", QueryComparisons.Equal, id));
+            var report = await table.ExecuteQuerySegmentedAsync(query, null);
+            var result = report.Select(r => ProjectMapper.ToModel(r)).SingleOrDefault();
+
+            return result;
+        }
+
+        public async Task UpdateProject(dynamic project)
+        {
+            CloudTable table = await Connect("Projects");
+
+            dynamic projectEntity = ProjectMapper.ToEntity(project);
+
+            var updateOperation = TableOperation.InsertOrReplace(projectEntity);
+
+            await table.ExecuteAsync(updateOperation);
+        }
+
+        public async Task<IEnumerable<DynamicModel>> FetchProjects(List<Tuple<string, string>> filter)
+        {
+            CloudTable table = await Connect("Projects");
+
+            var query = new TableQuery<DynamicEntity>();
+
+            if (filter.Count > 0)
+            {
+                var filterCondition = CreateFilter(filter);
+                query = query.Where(filterCondition);
+            }
+
+            var projects = await table.ExecuteQuerySegmentedAsync(query, null);
+            var results = projects.Select(r => ProjectMapper.ToModel(r));
+
+            return results;
         }
 
         private async Task<CloudTable> Connect(string tableName)
@@ -217,7 +293,7 @@ namespace Lisa.Breakpoint.Api
 
             membershipModel.userName = membershipModel.userName.ToString().ToLower();
 
-            IEnumerable<DynamicModel> membershipEntity = await FetchMemberships(membershipModel.project);
+            IEnumerable<DynamicModel> membershipEntity = await FetchMembershipsByProject(membershipModel.project);
 
             foreach (dynamic memberships in membershipEntity)
             {

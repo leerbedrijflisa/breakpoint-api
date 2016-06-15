@@ -1,30 +1,45 @@
 ﻿using Lisa.Common.WebApi;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Lisa.Breakpoint.Api
 {
     [Route("/memberships/")]
-    public class MemberShipController : Controller
+    public class MembershipController : Controller
     {
-        public MemberShipController(Database database)
+        public MembershipController(Database database)
         {
             _db = database;
         }
 
-        [HttpGet("{projectName}", Name = "SingleMembership")]
-        public async Task<ActionResult> Get(string projectName)
+        [HttpGet]
+        public async Task<ActionResult> Get([FromQuery] string project, [FromQuery] string role, [FromQuery] string userName)
         {
-            projectName = projectName.Replace("%20", "");
-            dynamic membership = await _db.FetchMemberships(projectName);
+            List<Tuple<string, string>> filter = new List<Tuple<string, string>>();
 
-            if (membership == null)
+            if (project != null)
+            {
+                filter.Add(Tuple.Create("project", project));
+            }
+            if (role != null)
+            {
+                filter.Add(Tuple.Create("role", role));
+            }
+            if (userName != null)
+            {
+                filter.Add(Tuple.Create("userName", userName));
+            }
+
+            dynamic memberships = await _db.FetchMemberships(filter);
+
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
 
-            return new OkObjectResult(membership);
+            return new OkObjectResult(memberships);
         }
 
         [HttpPost]
@@ -44,7 +59,7 @@ namespace Lisa.Breakpoint.Api
             var membershipCheck = await _db.CheckMembership(membership);
             if (membershipCheck == null)
             {
-                var error = MemberShipValidator.MembershipError(membership);
+                var error = MembershipValidator.MembershipError(membership);
 
                 return new UnprocessableEntityObjectResult(error);
             }
@@ -57,18 +72,74 @@ namespace Lisa.Breakpoint.Api
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteMembership(Guid id)
+        public async Task<ActionResult> DeleteMembership([FromQuery] string userName, Guid id)
         {
-            var membership = await _db.DeleteMembership(id);
-
-            if (!membership)
+            dynamic memberships = await _db.FetchMemberships();
+            if (memberships == null)
             {
                 return new NotFoundResult();
             }
+
+            string deletedName = null;
+            string deletedRole = null;
+            string project = null;
+
+            foreach (var membership in memberships)
+            {
+                if (membership.id == id)
+                {
+                    deletedName = membership.userName;
+                    deletedRole = membership.role;
+                    project = membership.project;
+                }
+            }
+
+            if (deletedRole == null)
+            {
+                return new NotFoundResult();
+            }
+
+            string userRole = null;
+
+            foreach (var membership in memberships)
+            {
+                if (membership.userName == userName)
+                {
+                    userRole = membership.role;
+                }
+            }
+
+            if (!((userRole == "manager") ||
+                (userRole == "developer" && (deletedRole == "tester" || userName == deletedName)) ||
+                (userRole == "tester" && userName == deletedName)))
+            {
+                return new StatusCodeResult(401);
+            }
+
+            if (deletedRole == "manager")
+            {
+                int managerCount = 0;
+
+                foreach (var membership in memberships)
+                {
+                    if (membership.project == project && membership.role == "manager")
+                    {
+                        managerCount += 1;
+                    }
+                }
+
+                if (managerCount == 1)
+                {
+                    return new StatusCodeResult(401);
+                }
+            }
+
+            await _db.DeleteMembership(id);
+            
             return new StatusCodeResult(204);
         }
 
         private Database _db;
-        private Validator _validator = new MemberShipValidator();
+        private Validator _validator = new MembershipValidator();
     }
 }
